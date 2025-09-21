@@ -1,0 +1,45 @@
+{
+    "name": "hasanhawary/dynamic-cli",
+    "description": "A Laravel package providing a dynamic CLI scaffolder for CRUD generation (skeleton).",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "laravel",
+        "cli",
+        "crud",
+        "generator",
+        "scaffolding"
+    ],
+    "authors": [
+        {
+            "name": "Hasan Hawary",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=8.0",
+        "illuminate/support": "^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "HasanHawary\\DynamicCli\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "HasanHawary\\DynamicCli\\DynamicCliServiceProvider"
+            ]
+        }
+    },
+    "homepage": "https://github.com/hasanhawary/dynamic-cli",
+    "support": {
+        "issues": "https://github.com/hasanhawary/dynamic-cli/issues",
+        "source": "https://github.com/hasanhawary/dynamic-cli"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

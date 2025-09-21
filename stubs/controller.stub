@@ -1,0 +1,34 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+
+class {{ class }} extends Controller
+{
+    public function index()
+    {
+        // TODO: list resources
+    }
+
+    public function store(Request $request)
+    {
+        // TODO: validate and create resource
+    }
+
+    public function show($id)
+    {
+        // TODO: show resource
+    }
+
+    public function update(Request $request, $id)
+    {
+        // TODO: validate and update resource
+    }
+
+    public function destroy($id)
+    {
+        // TODO: delete resource
+    }
+}
