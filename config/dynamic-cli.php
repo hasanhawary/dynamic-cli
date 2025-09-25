@@ -1,13 +1,8 @@
 <?php
 
 return [
-    // Package configuration for Dynamic CLI
-
-    // Default namespace where generated classes will be placed
-    'namespace' => 'App\\Dynamic',
-
     // Stub paths to be used for generation
-    'stubs' => [
+    'base' => [
         'model' => __DIR__ . '/../stubs/model.stub',
         'controller' => __DIR__ . '/../stubs/controller.stub',
         'migration' => __DIR__ . '/../stubs/migration.stub',
@@ -15,6 +10,19 @@ return [
         'resource' => __DIR__ . '/../stubs/resource.stub',
         'enum' => __DIR__ . '/../stubs/enum.stub',
         'seeder' => __DIR__ . '/../stubs/seeder.stub',
+        'policy' => __DIR__ . '/../stubs/policy.stub',
+        'scope' => __DIR__ . '/../stubs/scope.stub',
+    ],
+
+    // Stub paths to be used for generation
+    'namespaces' => [
+        'model' => 'App\Models',
+        'controller' => 'App\Http\Controllers\API',
+        'migration' => 'database\migrations',
+        'request' => 'App\Http\Requests',
+        'resource' => 'App\Http\Resources',
+        'enum' => 'App\Enum',
+        'seeder' => 'database\seeders'
     ],
 
     // Default options for generators (to be extended later)

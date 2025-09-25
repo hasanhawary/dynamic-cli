@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\API\{{group}};
+namespace App\Http\Controllers\API\Example;
 
-use App\Filters\{{group}}\{{model}}Filter;
-;;;;;/////////////////////////////////////////////////////////////////////////use App\Http\Controllers\Controller;
-use App\Http\Requests\{{group}}\{{model}}Request;
+use App\Filters\Example\{{model}}Filter;
+use App\Filters\Global\JsonDisplayNameFilter;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Example\{{model}}Request;
 use App\Http\Requests\Global\Other\PageRequest;
-use App\Http\Requests\Global\Other\OrderByFilter;
-use App\Http\Resources\{{group}}\{{model}}Resource;
+use App\Http\Resources\Example\{{model}}Resource;
 use App\Models\{{model}};
 use App\Trait\Global\HasSoftDeleteMethods;
 use Illuminate\Http\JsonResponse;
@@ -43,7 +43,7 @@ class {{model}}Controller extends Controller implements HasMiddleware
     {
         $query = app(Pipeline::class)
             ->send({{model}}::query())
-            ->through([OrderByFilter::class])
+            ->through([{{model}}Filter::class, JsonDisplayNameFilter::class])
             ->thenReturn();
 
         return successResponse(fetchData($query, $request->pageSize, {{model}}Resource::class));

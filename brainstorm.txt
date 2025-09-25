@@ -1,0 +1,12 @@
+What I Need To Create Dynamic Crud
+
+name: Country
+schema: [json => [ {name: string} ] , sample => [ {name: Test} ]] //Detect if have enum and tell him what prefer value of enum
+
+Optionals
+Is Multi Trans => yes or now when yes => [select of column can be trans] //Default => no
+Make Data It Related To User => yes or now  when yes => [apply policy [view-all , view-own]] //Default => no
+Create Seeder => yes or no //Default => no
+Apply Soft Delete => yes or no when yes => [add [force-delete , restore ] methods] //Default No
+Apply Scopes => yes or no when yes => suggest possible scopes
+Preferred Folder => DataEntry, Other => [Write Other] //Default DataEntry
