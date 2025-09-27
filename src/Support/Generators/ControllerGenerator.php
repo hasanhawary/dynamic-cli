@@ -3,6 +3,7 @@
 namespace HasanHawary\DynamicCli\Support\Generators;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Support\Str;
 
 class ControllerGenerator extends AbstractStubGenerator
 {
@@ -13,17 +14,20 @@ class ControllerGenerator extends AbstractStubGenerator
      */
     public function generate(string $studly, string $group, string $table, bool $force, array &$created, array $callbacks): void
     {
-        $controllerPath = config('dynamic-cli.namespaces.controller');
+        $controllerPath = config('dynamic-cli.path.controller')."/$group";
+        $namespace = config('dynamic-cli.namespaces.controller')."\\$group";
+        $targetPath = "$controllerPath/{$studly}Controller.php";
+
         $this->writeFromBase(
             'controller',
-            "$controllerPath/$group/{$studly}Controller.php",
+            $targetPath,
             [
-                '{{ model }}' => $studly,
-                '{{ modelSnake }}' => $studly,
-                '{{ table }}' => $table,
-                '{{ group }}' => $group,
-                '{{ namespace }}' => 'App\\Http\\Controllers',
-                '{{ class }}' => $studly . 'Controller',
+                '{{model}}' => $studly,
+                '{{modelSnake}}' => Str::snake($studly),
+                '{{table}}' => $table,
+                '{{group}}' => $group,
+                '{{namespace}}' => $namespace,
+                '{{class}}' => "{$studly}Controller",
             ],
             $force,
             'Controller',

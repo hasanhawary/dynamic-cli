@@ -25,6 +25,16 @@ return [
         'seeder' => 'database\seeders'
     ],
 
+    'path' => [
+        'model' => 'App\Models',
+        'controller' => 'app/Http/Controllers/API',
+        'migration' => 'database\migrations',
+        'request' => 'App\Http\Requests',
+        'resource' => 'App\Http\Resources',
+        'enum' => 'App\Enum',
+        'seeder' => 'database\seeders'
+    ],
+
     // Default options for generators (to be extended later)
     'options' => [
         'force' => false,
