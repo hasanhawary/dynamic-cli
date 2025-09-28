@@ -43,17 +43,19 @@ abstract class AbstractStubGenerator
         $warn = $callbacks['warn'];
 
         $stubPath = $this->resolveStub($stubKey);
-        if (!$stubPath || !file_exists($stubPath)) {
-            $warn("- Missing $label stub. Skipped ($targetPath)");
-            return;
-        }
+//        if (!$stubPath || !file_exists($stubPath)) {
+//            $warn("- Missing $label stub. Skipped ($targetPath)");
+//            return;
+//        }
+//
+//        if (!$force && $this->files->exists($targetPath)) {
+//            $line("- Skipped $label (exists): $targetPath");
+//            return;
+//        }
 
-        if (!$force && $this->files->exists($targetPath)) {
-            $line("- Skipped $label (exists): $targetPath");
-            return;
-        }
 
         $dir = dirname($targetPath);
+
         if (!$this->files->isDirectory($dir)) {
             $this->files->makeDirectory($dir, 0755, true);
         }
