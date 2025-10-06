@@ -34,7 +34,6 @@ abstract class AbstractStubGenerator
         string $targetPath,
         array  $replacements,
         bool   $force,
-        string $label,
         array  &$created,
         array  $callbacks
     ): void
@@ -44,27 +43,35 @@ abstract class AbstractStubGenerator
 
         $stubPath = $this->resolveStub($stubKey);
 //        if (!$stubPath || !file_exists($stubPath)) {
-//            $warn("- Missing $label stub. Skipped ($targetPath)");
+//            $warn("- Missing $stubKey stub. Skipped ($targetPath)");
 //            return;
 //        }
 //
 //        if (!$force && $this->files->exists($targetPath)) {
-//            $line("- Skipped $label (exists): $targetPath");
+//            $line("- Skipped $stubKey (exists): $targetPath");
 //            return;
 //        }
 
 
         $dir = dirname($targetPath);
-
         if (!$this->files->isDirectory($dir)) {
             $this->files->makeDirectory($dir, 0755, true);
         }
 
+        // Get Stub Content
         $content = $this->files->get($stubPath);
-        $content = str_replace(array_keys($replacements), array_values($replacements), $content);
 
+        // Replace Dynamic Variables
+        $content = str_replace(
+            array_keys($replacements),
+            array_values($replacements),
+            $content
+        );
+
+        // Write New Fil With Generated Data
         $this->files->put($targetPath, $content);
-        $created[] = $label . ': ' . str_replace(base_path() . DIRECTORY_SEPARATOR, '', $targetPath);
-        $line('- Created ' . $label . ' -> ' . str_replace(base_path() . DIRECTORY_SEPARATOR, '', $targetPath));
+
+        $created[] = $stubKey . ': ' . str_replace(base_path() . DIRECTORY_SEPARATOR, '', $targetPath);
+        $line('- Created ' . $stubKey . ' -> ' . str_replace(base_path() . DIRECTORY_SEPARATOR, '', $targetPath));
     }
 }

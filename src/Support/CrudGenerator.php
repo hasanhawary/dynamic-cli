@@ -26,20 +26,17 @@ class CrudGenerator
      * @throws FileNotFoundException
      */
     public function generateAll(
-        string   $name,
-        string   $group,
-        string   $table,
+        array    $params,
         bool     $force,
-        string   $routeTarget,
         callable $line,
         callable $info,
         callable $warn
     ): array
     {
-        $model = Str::studly($name);
+        $model = Str::studly($params['name']);
         $created = [];
 
-        $line("Generating CRUD for $model,(table: $table)...");
+        $line("Generating CRUD for $model,(table: {$params['table']})...");
 
         $callbacks = [
             'line' => $line,
@@ -48,7 +45,7 @@ class CrudGenerator
         ];
 
         // Instantiate generators
-        //$modelGen = new ModelGenerator($this->files);
+        $modelGen = new ModelGenerator($this->files);
         $controllerGen = new ControllerGenerator($this->files);
 //        $requestGen = new RequestGenerator($this->files);
 //        $resourceGen = new ResourceGenerator($this->files);
@@ -58,8 +55,8 @@ class CrudGenerator
 //        $routeRegistrar = new RouteRegistrar($this->files);
 
         // Execute generators
-        // $modelGen->generate($model, $group, $table, $force, $created, $callbacks);
-        $controllerGen->generate($model, $group, $table, $force, $created, $callbacks);
+        $modelGen->generate($params, $force, $created, $callbacks);
+        $controllerGen->generate($params, $force, $created, $callbacks);
 //        $requestGen->generate($model, $group, $table, $force, $created, $callbacks);
 //        $resourceGen->generate($model, $group, $table, $force, $created, $callbacks);
 //        $enumGen->generate($model, $group, $table, $force, $created, $callbacks);

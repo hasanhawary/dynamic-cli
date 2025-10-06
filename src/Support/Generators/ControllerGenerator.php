@@ -12,25 +12,24 @@ class ControllerGenerator extends AbstractStubGenerator
      * @throws FileNotFoundException
      * @throws FileNotFoundException
      */
-    public function generate(string $studly, string $group, string $table, bool $force, array &$created, array $callbacks): void
+    public function generate(array $params, bool $force, array &$created, array $callbacks): void
     {
-        $controllerPath = config('dynamic-cli.path.controller')."/$group";
-        $namespace = config('dynamic-cli.namespaces.controller')."\\$group";
-        $targetPath = "$controllerPath/{$studly}Controller.php";
+        $modelPath = config('dynamic-cli.path.model') . "/{$params['group']}";
+        $namespace = config('dynamic-cli.namespaces.model') . "\\{$params['group']}";
+        $targetPath = "$modelPath/{$params['studly']}Controller.php";
 
         $this->writeFromBase(
             'controller',
             $targetPath,
             [
-                '{{model}}' => $studly,
-                '{{modelSnake}}' => Str::snake($studly),
-                '{{table}}' => $table,
-                '{{group}}' => $group,
+                '{{model}}' => $params['studly'],
+                '{{modelSnake}}' => Str::snake($params['studly']),
+                '{{table}}' => $params['table'],
+                '{{group}}' => $params['table'],
                 '{{namespace}}' => $namespace,
-                '{{class}}' => "{$studly}Controller",
+                '{{class}}' => "{$params['studly']}Controller",
             ],
             $force,
-            'Controller',
             $created,
             $callbacks
         );
