@@ -26,7 +26,7 @@ return [
     ],
 
     'path' => [
-        'model' => 'App\Models',
+        'model' => 'app/Models',
         'controller' => 'app/Http/Controllers/API',
         'migration' => 'database\migrations',
         'request' => 'App\Http\Requests',

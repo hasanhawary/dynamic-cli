@@ -14,8 +14,8 @@ class ControllerGenerator extends AbstractStubGenerator
      */
     public function generate(array $params, bool $force, array &$created, array $callbacks): void
     {
-        $modelPath = config('dynamic-cli.path.model') . "/{$params['group']}";
-        $namespace = config('dynamic-cli.namespaces.model') . "\\{$params['group']}";
+        $modelPath = config('dynamic-cli.path.controller') . "/{$params['group']}";
+        $namespace = config('dynamic-cli.namespaces.controller') . "\\{$params['group']}";
         $targetPath = "$modelPath/{$params['studly']}Controller.php";
 
         $this->writeFromBase(

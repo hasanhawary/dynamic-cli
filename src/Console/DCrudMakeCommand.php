@@ -63,22 +63,22 @@ class DCrudMakeCommand extends Command
         if ($customSchema) {
             $this->info('Opening temporary file... Write your JSON schema and save/close.');
             $tmpFile = storage_path('tmp_schema.json');
-            file_put_contents($tmpFile, json_encode([
-                "name" => "string",
-                "description" => "string"
-            ], JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));
+            file_put_contents(
+                $tmpFile,
+                json_encode($this->defaultSchema(), JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT)
+            );
 
-            // Try to open with default editor (Windows: notepad, Linux/Mac: vi/nano)
-            if (PHP_OS_FAMILY === 'Windows') {
+            // Open editor
+            if (PHP_OS_FAMILY === 'Darwin') { // macOS
+                exec("open -a TextEdit {$tmpFile}");
+            } elseif (PHP_OS_FAMILY === 'Windows') {
                 exec("notepad {$tmpFile}");
             } else {
-                exec("vi {$tmpFile}");
+                exec("nano {$tmpFile}");
             }
 
             // Read and clean content
             $jsonContent = file_get_contents($tmpFile);
-
-            // Remove BOM and escape sequences like \n or \t that might appear literally
             $jsonContent = preg_replace('/\\\\[ntr]/', '', trim($jsonContent));
             $jsonContent = trim($jsonContent, "\"' \t\n\r");
 
@@ -92,32 +92,25 @@ class DCrudMakeCommand extends Command
                 $this->line(substr($jsonContent, 0, 300) . (strlen($jsonContent) > 300 ? '...' : ''));
                 $this->newLine();
                 $this->comment('💡 Tip: Make sure the file contains valid JSON like:');
-                $this->line('{
-                        "name": "string",
-                        "description": "string"
-                    }');
+                $this->line(json_encode($this->defaultSchema(), JSON_PRETTY_PRINT));
                 $this->newLine();
                 return self::INVALID;
             }
 
-            // Validate structure
             if (!is_array($decoded)) {
                 $this->error('❌ Schema must be a JSON object, not text or list.');
                 return self::INVALID;
             }
 
             $schema = $decoded;
-
         } else {
             $this->newLine();
             $this->warn('💡 Using default schema:');
-            $this->line(' - name: string');
-            $this->line(' - description: string');
+            foreach ($this->defaultSchema() as $key => $type) {
+                $this->line(" - {$key}: " . (is_array($type) ? 'array' : $type));
+            }
             $this->newLine();
-            $schema = [
-                "name" => "string",
-                "description" => "string",
-            ];
+            $schema = $this->defaultSchema();
         }
 
         $this->newLine();
@@ -133,14 +126,13 @@ class DCrudMakeCommand extends Command
                 $this->line(" - {$key} : {$type}");
             }
 
-            // Detect foreign key
             if (Str::endsWith($key, '_id')) {
                 $relatedModel = Str::studly(Str::beforeLast($key, '_id'));
                 $this->warn("   ↪ Foreign key detected: {$relatedModel} model");
             }
         }
 
-        // Normalize and enrich schema metadata (AI-like)
+        // Normalize and enrich schema
         $this->newLine();
         $this->info('🧠 Analyzing and enriching schema details...');
 
@@ -157,21 +149,14 @@ class DCrudMakeCommand extends Command
                 'has_default' => false,
                 'default_value' => null,
                 'is_enum' => false,
+                'is_column' => true,
                 'enum_values' => [],
                 'comment' => '',
             ];
 
             $keyLower = strtolower($key);
+            $detectedType = ValueDetector::resolve($value, $meta) ?? KeyDetector::resolve($keyLower, $meta);
 
-            // Detect data type from explicit value or sample text
-            $detectedType = ValueDetector::resolve($value, $meta);
-
-            // If still unknown, try to infer from key name
-            if (!$detectedType) {
-                $detectedType = KeyDetector::resolve($keyLower, $meta);
-            }
-
-            // If still can’t detect — ask user
             if (!$detectedType) {
                 $this->newLine();
                 $this->warn("⚠️  Couldn’t detect type for '{$key}' (value: " . json_encode($value, JSON_THROW_ON_ERROR) . ")");
@@ -182,10 +167,8 @@ class DCrudMakeCommand extends Command
                 );
             }
 
-            // Assign detected type
             $meta['data_type'] = $detectedType;
 
-            // Relations
             if ($detectedType === 'foreignId' || Str::endsWith($keyLower, '_id')) {
                 $relatedModel = Str::studly(Str::beforeLast($keyLower, '_id'));
                 $meta['is_relation'] = true;
@@ -197,15 +180,12 @@ class DCrudMakeCommand extends Command
                 ];
             }
 
-            // File fields
             if (preg_match('/(image|photo|logo|avatar|file|document|attachment|media)/i', $keyLower)) {
                 $meta['is_file'] = true;
             }
 
-
-            // Translatable field (from a pattern)
             if (
-                $meta['is_translatable'] === false
+                !$meta['is_translatable']
                 && preg_match('/(title|name|description|label|text)/', $keyLower)
                 && $this->confirm("Is '{$key}' translatable?", false)
             ) {
@@ -216,22 +196,13 @@ class DCrudMakeCommand extends Command
             $normalizedSchema[$key] = $meta;
         }
 
-        // Show final schema summary
         $this->newLine();
         $this->info('📋 Final Schema Mapping:');
         foreach ($normalizedSchema as $key => $meta) {
             $flags = [];
-            if ($meta['is_translatable']) {
-                $flags[] = '🌍 translatable';
-            }
-
-            if ($meta['is_relation']) {
-                $flags[] = '🔗 relation(' . $meta['relation']['model'] . ')';
-            }
-
-            if ($meta['is_file']) {
-                $flags[] = '🖼️ file';
-            }
+            if ($meta['is_translatable']) $flags[] = '🌍 translatable';
+            if ($meta['is_relation']) $flags[] = '🔗 relation(' . $meta['relation']['model'] . ')';
+            if ($meta['is_file']) $flags[] = '🖼️ file';
 
             $this->line(sprintf(
                 " - %-20s → %-10s (%s)",
@@ -241,38 +212,29 @@ class DCrudMakeCommand extends Command
             ));
         }
 
-        $this->newLine();
-        if (!$this->confirm('✅ Confirm this schema mapping?', true)) {
-            $this->warn('Generation aborted.');
-            return self::INVALID;
-        }
-
         $schema = $normalizedSchema;
 
-        // Confirm continuing
-        $continue = $this->confirm('Do you want to continue and generate CRUD files?', true);
-        if (!$continue) {
+        if (!$this->confirm('Do you want to continue and generate CRUD files?', true)) {
             $this->warn('Generation aborted.');
             return self::INVALID;
         }
 
-        // Generate
         $this->newLine();
         $this->info('⚙️ Generating files...');
 
         $params = [
             'name' => $name,
+            'studly' => Str::studly($name),
             'group' => $group,
             'table' => $table,
             'route' => $route,
             'schema' => $schema,
         ];
 
-        dd($params);
+
         $files = new Filesystem();
         $generator = new CrudGenerator($files);
 
-        // Generate Crud With All Important Classes
         $created = $generator->generateAll(
             $params,
             $this->option('force'),
@@ -296,27 +258,36 @@ class DCrudMakeCommand extends Command
     }
 
     /**
-     * Detect if the field is a translatable array (has keys like 'ar', 'en').
-     *
-     * Example:
-     * [
-     *   "ar" => "مرحبا",
-     *   "en" => "Hello"
-     * ]
+     * Default schema data (editable in one place).
+     */
+    protected function defaultSchema(): array
+    {
+        return [
+            "name" => [
+                "ar" => "اسم تجريبي",
+                "en" => "Sample Name"
+            ],
+            "description" => [
+                "ar" => "وصف تجريبي",
+                "en" => "Sample Description"
+            ],
+            "photo" => "file",
+            "country_id" => 1
+        ];
+    }
+
+    /**
+     * Detect if a field is translatable (contains language keys like ar/en).
      */
     protected function isTranslatableField(array $value): bool
     {
-        // Most common language keys
         $langKeys = ['ar', 'en', 'fr', 'de', 'es', 'it', 'tr', 'ru', 'zh', 'jp'];
-
-        // More general check (in case other language codes are used)
         $keys = array_keys($value);
         foreach ($keys as $k) {
             if (in_array(strtolower($k), $langKeys, true)) {
                 return true;
             }
         }
-
         return false;
     }
 }
