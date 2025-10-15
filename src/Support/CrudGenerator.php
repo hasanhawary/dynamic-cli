@@ -3,7 +3,6 @@
 namespace HasanHawary\DynamicCli\Support;
 
 use HasanHawary\DynamicCli\Support\Generators\ControllerGenerator;
-use HasanHawary\DynamicCli\Support\Generators\ValueDetector;
 use HasanHawary\DynamicCli\Support\Generators\EnumGenerator;
 use HasanHawary\DynamicCli\Support\Generators\MigrationGenerator;
 use HasanHawary\DynamicCli\Support\Generators\ModelGenerator;

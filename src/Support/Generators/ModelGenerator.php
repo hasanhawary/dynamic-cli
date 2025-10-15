@@ -2,7 +2,9 @@
 
 namespace HasanHawary\DynamicCli\Support\Generators;
 
+use HasanHawary\MediaManager\Facades\Media;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class ModelGenerator extends AbstractStubGenerator
 {
@@ -10,6 +12,7 @@ class ModelGenerator extends AbstractStubGenerator
      * @var array
      */
     protected array $uses = [];
+
     /**
      * @param array{line:callable, warn:callable} $callbacks
      * @throws FileNotFoundException
@@ -33,7 +36,7 @@ class ModelGenerator extends AbstractStubGenerator
                 '{{model}}' => $params['studly'],
                 '{{columns}}' => $columns,
                 '{{namespace}}' => $namespace,
-                '{{customAttributes}}' => $customAttributes ?? "",
+                '{{customAttributes}}' => $customAttributes,
                 '{{columnsTranslatable}}' => $columnsTranslatable,
                 '{{relations}}' => $relations,
                 '{{uses}}' => $this->resolveUses(),
@@ -49,18 +52,18 @@ class ModelGenerator extends AbstractStubGenerator
     {
         return collect($schema)->filter(function ($field) {
             return $field['is_column'] ?? false;
-           })->keys()->map(function ($key) {
+        })->keys()->map(function ($key) {
             return "'$key'";
-        })->implode(', ');
+        })->implode(', ') ?? "";
     }
 
     public function resolveCustomAttribute(array $schema): string
     {
         return collect($schema)->filter(function ($field) {
             return $field['is_file'] ?? false;
-        })->map(function ($column,$key) {
+        })->map(function ($column, $key) {
             return $this->generateCustomFileMethod($key);
-        })->values()->implode("\n");
+        })->values()->implode("\n") ?? "";
     }
 
     public function resolveTranslate(array $schema): string
@@ -69,7 +72,7 @@ class ModelGenerator extends AbstractStubGenerator
             return $field['is_translatable'] ?? false;
         })->keys()->map(function ($key) {
             return "'$key'";
-        })->implode(', ');
+        })->implode(', ') ?? "";
     }
 
     public function resolveRelation(array $schema): string
@@ -99,8 +102,8 @@ class ModelGenerator extends AbstractStubGenerator
 
     private function generateCustomFileMethod(string $column): string
     {
-        $this->uses[] = 'Illuminate\Database\Eloquent\Casts\Attribute';
-        $this->uses[] = 'HasanHawary\MediaManager\Facades\Media';
+        $this->uses[] = Attribute::class;
+        $this->uses[] = Media::class;
 
         return <<<EOT
         public function {$column}(): Attribute
@@ -120,6 +123,5 @@ class ModelGenerator extends AbstractStubGenerator
 
         return implode("\n", $formattedUses) . "\n";
     }
-
 }
 

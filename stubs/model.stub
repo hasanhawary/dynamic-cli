@@ -2,7 +2,6 @@
 
 namespace {{namespace}};
 
-use App\Trait\Global\ApplyNotification;
 use App\Trait\Global\CreatedByObserver;
 use App\Trait\Global\LogsActivityOptions;
 use Spatie\Activitylog\LogOptions;
@@ -12,10 +11,10 @@ use Spatie\Translatable\HasTranslations;
 
 class {{model}} extends Model
 {
-    use HasTranslations, ApplyNotification,CreatedByObserver, LogsActivityOptions;
+    use HasTranslations, CreatedByObserver, LogsActivityOptions;
 
     public bool $inPermission = true;
-     public array $translatable = [{{columnsTranslatable}}];
+    public array $translatable = [{{columnsTranslatable}}];
     protected $fillable = [{{columns}}];
 
     /*

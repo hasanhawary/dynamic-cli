@@ -2,7 +2,6 @@
 
 namespace HasanHawary\DynamicCli;
 
-use HasanHawary\DynamicCli\Console\DBuildCommand;
 use HasanHawary\DynamicCli\Console\DCrudMakeCommand;
 use Illuminate\Support\ServiceProvider;
 
@@ -18,7 +17,6 @@ class DynamicCliServiceProvider extends ServiceProvider
         // Register package commands
         if ($this->app->runningInConsole()) {
             $this->commands([
-                DBuildCommand::class,
                 DCrudMakeCommand::class,
             ]);
         }
@@ -28,10 +26,5 @@ class DynamicCliServiceProvider extends ServiceProvider
     {
         // Merge package config
         $this->mergeConfigFrom(__DIR__ . '/../config/dynamic-cli.php', 'dynamic-cli');
-
-        // Load any helpers if added in the future
-        if (file_exists(__DIR__ . '/helpers.php')) {
-            require_once __DIR__ . '/helpers.php';
-        }
     }
 }

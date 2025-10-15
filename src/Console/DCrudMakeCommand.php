@@ -142,6 +142,7 @@ class DCrudMakeCommand extends Command
                 'data_type' => 'string',
                 'is_translatable' => false,
                 'is_file' => false,
+                'file_types' => ['jpg,png,jpeg,png'],
                 'is_relation' => false,
                 'relation' => null,
                 'is_nullable' => true,
@@ -230,7 +231,6 @@ class DCrudMakeCommand extends Command
             'route' => $route,
             'schema' => $schema,
         ];
-
 
         $files = new Filesystem();
         $generator = new CrudGenerator($files);
