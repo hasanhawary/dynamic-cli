@@ -1,13 +1,13 @@
 <?php
 
-namespace {{ namespace }};
+namespace {{namespace}};
 
 use Illuminate\Database\Seeder;
 
-class {{ class }} extends Seeder
+class {{class}} extends Seeder
 {
     public function run(): void
     {
-        // TODO: seed your {{ model }} records
+        {{content}}
     }
 }

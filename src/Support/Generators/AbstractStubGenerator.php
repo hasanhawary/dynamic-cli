@@ -61,8 +61,6 @@ abstract class AbstractStubGenerator
         // Get Stub Content
         $content = $this->files->get($stubPath);
 
-        // dd(array_keys($replacements),
-        //     array_values($replacements));
         // Replace Dynamic Variables
         $content = str_replace(
             array_keys($replacements),

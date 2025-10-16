@@ -3,28 +3,51 @@
 namespace HasanHawary\DynamicCli\Support\Generators;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Support\Str;
 
 class EnumGenerator extends AbstractStubGenerator
 {
+    protected array $uses = [
+        'HasanHawary\LookupManager\Trait\EnumMethods',
+    ];
+
     /**
-     * @param array{line:callable, warn:callable} $callbacks
      * @throws FileNotFoundException
      */
-    public function generate(string $studly, string $group, string $table, bool $force, array &$created, array $callbacks): void
+    public function generate(array $params, bool $force, array &$created, array $callbacks): void
     {
+        $path = config('dynamic-cli.path.enum') . "/{$params['group']}";
+        $namespace = config('dynamic-cli.namespaces.enum') . "\\{$params['group']}";
+        $targetPath = "$path/{$params['studly']}Enum.php";
+
+        $cases = $this->buildCases($params['enum_values'] ?? []);
+
         $this->writeFromBase(
             'enum',
-            app_path('Enums/' . $studly . 'Status.php'),
+            $targetPath,
             [
-                '{{ model }}' => $studly,
-                '{{ table }}' => $table,
-                '{{ namespace }}' => 'App\\Enums',
-                '{{ class }}' => $studly . 'Status',
+                '{{namespace}}' => $namespace,
+                '{{class}}'     => $params['studly'],
+                '{{cases}}'       => $cases,
             ],
             $force,
-            'Enum',
             $created,
             $callbacks
         );
+    }
+
+    /**
+     * Build enum cases (StudlyCase name = snake_case value)
+     */
+    protected function buildCases(array $values): string
+    {
+        return collect($values)
+            ->filter()
+            ->map(function ($value) {
+                $caseName = Str::studly(Str::snake($value));
+                $caseValue = Str::snake($value);
+                return "    case {$caseName} = '{$caseValue}';";
+            })
+            ->implode("\n");
     }
 }

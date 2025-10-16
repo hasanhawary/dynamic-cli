@@ -25,7 +25,7 @@ class ControllerGenerator extends AbstractStubGenerator
                 '{{model}}' => $params['studly'],
                 '{{modelSnake}}' => Str::snake($params['studly']),
                 '{{table}}' => $params['table'],
-                '{{group}}' => $params['table'],
+                '{{group}}' => $params['group'],
                 '{{namespace}}' => $namespace,
                 '{{class}}' => "{$params['studly']}Controller",
             ],

@@ -11,7 +11,6 @@ return [
         'enum' => __DIR__ . '/../stubs/enum.stub',
         'seeder' => __DIR__ . '/../stubs/seeder.stub',
         'policy' => __DIR__ . '/../stubs/policy.stub',
-        'scope' => __DIR__ . '/../stubs/scope.stub',
     ],
 
     // Stub paths to be used for generation
@@ -22,17 +21,18 @@ return [
         'request' => 'App\Http\Requests',
         'resource' => 'App\Http\Resources',
         'enum' => 'App\Enum',
-        'seeder' => 'database\seeders'
+        'seeder' => 'Database\Seeders'
     ],
 
     'path' => [
         'model' => 'app/Models',
         'controller' => 'app/Http/Controllers/API',
-        'migration' => 'database\migrations',
-        'request' => 'App\Http\Requests',
-        'resource' => 'App\Http\Resources',
-        'enum' => 'App\Enum',
-        'seeder' => 'database\seeders'
+        'migration' => 'database/migrations',
+        'request' => 'app/Http/Requests',
+        'resource' => 'app/Http/Resources',
+        'enum' => 'app/Enum',
+        'seeder' => 'database/seeders',
+        'route' => 'routes'
     ],
 
     // Default options for generators (to be extended later)

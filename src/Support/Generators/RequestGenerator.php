@@ -2,17 +2,20 @@
 
 namespace HasanHawary\DynamicCli\Support\Generators;
 
+use App\Rules\TranslatableNullable;
+use App\Rules\TranslatableRequired;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class RequestGenerator extends AbstractStubGenerator
 {
     protected array $uses = [
-        'Illuminate\\Validation\\Rule',
-        'Illuminate\\Foundation\\Http\\FormRequest',
-        'App\\Rules\\TranslatableRequired',
-        'App\\Rules\\TranslatableNullable',
+        Rule::class,
+        FormRequest::class,
+        TranslatableRequired::class,
+        TranslatableNullable::class,
     ];
 
     /**
@@ -20,8 +23,8 @@ class RequestGenerator extends AbstractStubGenerator
      */
     public function generate(array $params, bool $force, array &$created, array $callbacks): void
     {
-        $path = config('dynamic-cli.path.request');
-        $namespace = config('dynamic-cli.namespaces.request');
+        $path = config('dynamic-cli.path.request') . "/{$params['group']}";
+        $namespace = config('dynamic-cli.namespaces.request') . "\\{$params['group']}";
         $targetPath = "$path/{$params['studly']}Request.php";
 
         $validation = $this->resolveValidation($params);
@@ -30,10 +33,10 @@ class RequestGenerator extends AbstractStubGenerator
             'request',
             $targetPath,
             [
-                '{{class}}'      => "{$params['studly']}Request",
-                '{{namespace}}'  => $namespace,
-                '{{rules}}'      => $validation,
-                '{{uses}}'       => $this->resolveUses(),
+                '{{class}}' => "{$params['studly']}Request",
+                '{{namespace}}' => $namespace,
+                '{{rules}}' => $validation,
+                '{{uses}}' => $this->resolveUses(),
             ],
             $force,
             $created,
@@ -42,56 +45,59 @@ class RequestGenerator extends AbstractStubGenerator
     }
 
     /**
-     * Build validation array.
+     * Build a validation array.
      */
     public function resolveValidation(array $params): string
     {
         $schema = $params['schema'] ?? [];
         $table = $params['table'] ?? '';
 
-        $lines = collect($schema)->map(function ($meta, $column) use ($params, $table, $isUpdate) {
+        $lines = collect($schema)->map(function ($meta, $column) use ($table) {
             $rules = [];
 
-            // handle translatable fields first
+            // standard field validation
+            if (!empty($meta['is_nullable']) && empty($meta['is_translatable'])) {
+                $rules[] = "'nullable'";
+            }
+
+            if (empty($meta['is_nullable']) && empty($meta['is_translatable'])) {
+                $rules[] = "'required'";
+            }
+
+            // handle translatable fields
             if (!empty($meta['is_translatable'])) {
                 $rules[] = !empty($meta['is_nullable'])
-                    ? "new TranslatableNullable('{$column}', ['string', 'max:191'], '{$column}')"
-                    : "new TranslatableRequired('{$column}', ['string', 'max:191'], '{$column}')";
+                    ? "new TranslatableNullable('{$column}', ['string'], '{$column}')"
+                    : "new TranslatableRequired('{$column}', ['string'], '{$column}')";
 
-                // translatable is always array-based
                 $rules = array_merge(
-                    [!empty($meta['is_nullable']) ? 'nullable' : 'required', 'array'],
+                    [!empty($meta['is_nullable']) ? "'nullable'" : "'required'", "'array'"],
                     $rules
                 );
+
                 return "            '$column' => [" . implode(', ', $rules) . "],";
             }
 
-            // standard field validation
-            $rules[] = !empty($meta['is_nullable']) ? 'nullable' : 'required';
-
             // file fields
             if (!empty($meta['is_file'])) {
-                $rules[] = 'file';
+                $rules[] = "'file'";
                 if (!empty($meta['file_types'])) {
-                    $rules[] = "'mimes:" . implode(',', (array) $meta['file_types']) . "'";
+                    $rules[] = "'mimes:" . implode(',', (array)$meta['file_types']) . "'";
                 }
-            }
-            // relations
+            } // relations
             elseif (!empty($meta['is_relation'])) {
                 $relatedTable = $meta['relation']['table'] ?? Str::plural(Str::snake($meta['relation']['model'] ?? ''));
                 $rules[] = "'exists:$relatedTable,id'";
-            }
-            // enums
+            } // enums
             elseif (!empty($meta['is_enum'])) {
                 $values = implode(',', $meta['enum_values'] ?? []);
                 $rules[] = "'in:$values'";
-            }
-            // normal types
+            } // normal types
             else {
                 $rules[] = "'" . $this->resolveType($meta['data_type'] ?? 'string') . "'";
             }
 
-            // handle unique rule (create vs update)
+            // unique rule
             if (!empty($meta['is_unique'])) {
                 $rule = "Rule::unique('$table', '$column')->ignore(\$this->route('" . Str::singular($table) . "'))";
                 $rules[] = $rule;

@@ -3,8 +3,8 @@
 namespace HasanHawary\DynamicCli\Support\Generators;
 
 use HasanHawary\MediaManager\Facades\Media;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Str;
 
 class ModelGenerator extends AbstractStubGenerator
 {
@@ -15,7 +15,6 @@ class ModelGenerator extends AbstractStubGenerator
 
     /**
      * @param array{line:callable, warn:callable} $callbacks
-     * @throws FileNotFoundException
      * @throws FileNotFoundException
      */
     public function generate(array $params, bool $force, array &$created, array $callbacks): void
@@ -28,6 +27,9 @@ class ModelGenerator extends AbstractStubGenerator
         $customAttributes = $this->resolveCustomAttribute($params['schema']);
         $columnsTranslatable = $this->resolveTranslate($params['schema']);
         $relations = $this->resolveRelation($params['schema']);
+
+
+        $this->buildEnumIfExist($params, $force, $created, $callbacks);
 
         $this->writeFromBase(
             'model',
@@ -109,8 +111,8 @@ class ModelGenerator extends AbstractStubGenerator
         public function {$column}(): Attribute
             {
                 return new Attribute(
-                    set: fn(\$value) => Media::from(\$value)->store(),
-                    get: fn(\$value) => Media::url(\$value)
+                    get: fn(\$value) => Media::url(\$value),
+                    set: fn(\$value) => Media::from(\$value)->store()
                 );
             }
         EOT;
@@ -122,6 +124,25 @@ class ModelGenerator extends AbstractStubGenerator
         $formattedUses = array_map(fn($use) => "use {$use};", $uniqueUses);
 
         return implode("\n", $formattedUses) . "\n";
+    }
+
+    public function buildEnumIfExist(array $params, bool $force, array &$created, array $callbacks): array
+    {
+        return collect($params['schema'])->map(function ($field) use ($params, $force, $created, $callbacks) {
+
+            if ($field['is_enum'] && !empty($field['enum_values'])) {
+                $params['studly'] = Str::studly($field['column']);
+                unset($params['schema']);
+
+                (new EnumGenerator($this->files))
+                    ->generate(
+                        $params,
+                        $force,
+                        $created,
+                        $callbacks
+                    );
+            }
+        })->toArray();
     }
 }
 

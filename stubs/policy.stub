@@ -1,83 +1,80 @@
 <?php
 
-namespace App\Http\Controllers\API\Example;
+namespace App\Policies\{{group}};
 
-use App\Filters\Example\{{model}}Filter;
-use App\Filters\Global\JsonDisplayNameFilter;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Example\{{model}}Request;
-use App\Http\Requests\Global\Other\PageRequest;
-use App\Http\Resources\Example\{{model}}Resource;
 use App\Models\{{model}};
-use App\Trait\Global\HasSoftDeleteMethods;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Pipeline\Pipeline;
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
-use Spatie\Permission\Middleware\PermissionMiddleware;
-use function __;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
-class {{model}}Controller extends Controller implements HasMiddleware
+class {{model}}Policy
 {
-    use HasSoftDeleteMethods;
+    use HandlesAuthorization;
 
-    public function __construct()
+    /**
+     * @param User ${{modelSnake}}
+     * @param  ?{{model}} ${{modelSnake}}Model
+     * @return bool
+     */
+    public function view(User ${{modelSnake}}, ?{{model}} ${{modelSnake}}Model = null): bool
     {
-        $this->setSoftDeleteModel({{model}}::class);
-    }
-
-    public static function middleware(): array
-    {
-        return [
-            new Middleware(PermissionMiddleware::using('read-{{modelSnake}}'), only: ['index', 'show']),
-            new Middleware(PermissionMiddleware::using('create-{{modelSnake}}'), only: ['store']),
-            new Middleware(PermissionMiddleware::using('update-{{modelSnake}}'), only: ['update']),
-        ];
+        return (${{modelSnake}}->can('view-all-{{modelSnake}}') || ${{modelSnake}}->can('view-own-{{modelSnake}}'))
+        && (!${{modelSnake}}Model || $this->checkUser(${{modelSnake}}, ${{modelSnake}}Model));
     }
 
     /**
-     * @param PageRequest $request
-     * @return JsonResponse
+     * @param User ${{modelSnake}}
+     * @param {{model}}|null ${{modelSnake}}Model
+     * @return bool
      */
-    public function index(PageRequest $request): JsonResponse
+    public function create(User ${{modelSnake}}, ?{{model}} ${{modelSnake}}Model = null): bool
     {
-        $query = app(Pipeline::class)
-            ->send({{model}}::query())
-            ->through([{{model}}Filter::class, JsonDisplayNameFilter::class])
-            ->thenReturn();
-
-        return successResponse(fetchData($query, $request->pageSize, {{model}}Resource::class));
+        return ${{modelSnake}}->can('create-{{modelSnake}}') && (!${{modelSnake}}Model || $this->checkUser(${{modelSnake}}, ${{modelSnake}}Model));
     }
 
     /**
-     * @param {{model}}Request $request
-     * @return JsonResponse
+     * @param User ${{modelSnake}}
+     * @param {{model}} ${{modelSnake}}Model
+     * @return bool
      */
-    public function store({{model}}Request $request): JsonResponse
+    public function update(User ${{modelSnake}}, {{model}} ${{modelSnake}}Model): bool
     {
-        ${{modelSnake}} = {{model}}::create($request->validated());
-
-        return successResponse(new {{model}}Resource(${{modelSnake}}), __('api.created_success'));
+        return ${{modelSnake}}->can('update-{{modelSnake}}') && $this->checkUser(${{modelSnake}}, ${{modelSnake}}Model);
     }
 
     /**
-     * @param {{model}} ${{modelSnake}}
-     * @return JsonResponse
+     * @param User ${{modelSnake}}
+     * @param {{model}}|null ${{modelSnake}}Model
+     * @return bool
      */
-    public function show({{model}} ${{modelSnake}}): JsonResponse
+    public function delete(User ${{modelSnake}}, ?{{model}} ${{modelSnake}}Model = null): bool
     {
-        return successResponse(new {{model}}Resource(${{modelSnake}}));
+        if (!${{modelSnake}}->can('delete-{{modelSnake}}')) {
+            return false;
+        }
+
+        return !${{modelSnake}}Model || $this->checkUser(${{modelSnake}}, ${{modelSnake}}Model);
     }
 
     /**
-     * @param {{model}}Request $request
-     * @param {{model}} ${{modelSnake}}
-     * @return JsonResponse
+     * @param User ${{modelSnake}}
+     * @param {{model}}|null ${{modelSnake}}Model
+     * @return bool
      */
-    public function update({{model}}Request $request, {{model}} ${{modelSnake}}): JsonResponse
+    public function restore(User ${{modelSnake}}, ?User ${{modelSnake}}Model = null): bool
     {
-        ${{modelSnake}}->update($request->validated());
+        if (!${{modelSnake}}->can('restore-{{modelSnake}}')) {
+            return false;
+        }
 
-        return successResponse(new {{model}}Resource(${{modelSnake}}->refresh()), __('api.updated_success'));
+        return !${{modelSnake}}Model || $this->checkUser(${{modelSnake}}, ${{modelSnake}}Model);
+    }
+
+    /**
+     * @param User ${{modelSnake}}
+     * @param {{model}} ${{modelSnake}}Model
+     * @return bool
+     */
+    public function checkUser(User ${{modelSnake}}, {{model}} ${{modelSnake}}Model): bool
+    {
+        return ${{modelSnake}}->can('view-all-{{modelSnake}}') || ${{modelSnake}}Model->created_by === ${{modelSnake}}->id;
     }
 }

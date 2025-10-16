@@ -1,9 +1,10 @@
 <?php
 
-namespace {{ namespace }};
+namespace {{namespace}};
 
-enum {{ class }}: string
+enum {{class}}: string
 {
-    case ACTIVE = 'active';
-    case INACTIVE = 'inactive';
+    use EnumMethods;
+
+    {{cases}}
 }
