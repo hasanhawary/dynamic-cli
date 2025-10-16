@@ -19,8 +19,8 @@ class SeederGenerator extends AbstractStubGenerator
      */
     public function generate(array $params, bool $force, array &$created, array $callbacks): void
     {
-        $path = config('dynamic-cli.path.seeder');
-        $namespace = config('dynamic-cli.namespaces.seeder');
+        $path = config('dynamic-dynamic.path.seeder');
+        $namespace = config('dynamic-dynamic.namespaces.seeder');
         $targetPath = "{$path}/{$params['studly']}Seeder.php";
 
         $table = $params['table'] ?? Str::plural(Str::snake($params['studly']));

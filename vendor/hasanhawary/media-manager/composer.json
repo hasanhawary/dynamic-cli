@@ -1,0 +1,57 @@
+{
+  "name": "hasanhawary/media-manager",
+  "description": "Flexible Laravel media manager: accept media from UploadedFile, base64, URLs, or local paths and store on any filesystem disk.",
+  "type": "library",
+  "license": "MIT",
+  "keywords": [
+    "laravel",
+    "media",
+    "upload",
+    "storage",
+    "filesystem",
+    "files"
+  ],
+  "authors": [
+    { "name": "Hasan Hawary", "role": "Developer" }
+  ],
+  "require": {
+    "php": ">8.0",
+    "illuminate/support": "^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.5 || ^11.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "HasanHawary\\MediaManager\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "HasanHawary\\MediaManager\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "HasanHawary\\MediaManager\\MediaManagerServiceProvider"
+      ],
+      "aliases": {
+        "Media": "HasanHawary\\MediaManager\\Facades\\Media"
+      }
+    }
+  },
+  "scripts": {
+    "test": "../../vendor/bin/phpunit -c phpunit.xml"
+  },
+  "homepage": "https://github.com/hasanhawary/media-manager",
+  "support": {
+    "issues": "https://github.com/hasanhawary/media-manager/issues",
+    "source": "https://github.com/hasanhawary/media-manager"
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}

@@ -23,8 +23,8 @@ class RequestGenerator extends AbstractStubGenerator
      */
     public function generate(array $params, bool $force, array &$created, array $callbacks): void
     {
-        $path = config('dynamic-cli.path.request') . "/{$params['group']}";
-        $namespace = config('dynamic-cli.namespaces.request') . "\\{$params['group']}";
+        $path = config('dynamic-dynamic.path.request') . "/{$params['group']}";
+        $namespace = config('dynamic-dynamic.namespaces.request') . "\\{$params['group']}";
         $targetPath = "$path/{$params['studly']}Request.php";
 
         $validation = $this->resolveValidation($params);

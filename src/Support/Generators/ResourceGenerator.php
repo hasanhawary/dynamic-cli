@@ -17,8 +17,8 @@ class ResourceGenerator extends AbstractStubGenerator
      */
     public function generate(array $params, bool $force, array &$created, array $callbacks): void
     {
-        $modelPath = config('dynamic-cli.path.resource') . "/{$params['group']}";
-        $namespace = config('dynamic-cli.namespaces.resource') . "\\{$params['group']}";
+        $modelPath = config('dynamic-dynamic.path.resource') . "/{$params['group']}";
+        $namespace = config('dynamic-dynamic.namespaces.resource') . "\\{$params['group']}";
         $targetPath = "$modelPath/{$params['studly']}Resource.php";
 
 

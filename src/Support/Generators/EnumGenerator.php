@@ -16,8 +16,8 @@ class EnumGenerator extends AbstractStubGenerator
      */
     public function generate(array $params, bool $force, array &$created, array $callbacks): void
     {
-        $path = config('dynamic-cli.path.enum') . "/{$params['group']}";
-        $namespace = config('dynamic-cli.namespaces.enum') . "\\{$params['group']}";
+        $path = config('dynamic-dynamic.path.enum') . "/{$params['group']}";
+        $namespace = config('dynamic-dynamic.namespaces.enum') . "\\{$params['group']}";
         $targetPath = "$path/{$params['studly']}Enum.php";
 
         $cases = $this->buildCases($params['enum_values'] ?? []);
