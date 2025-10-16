@@ -11,7 +11,7 @@ class DynamicCliServiceProvider extends ServiceProvider
     {
         // Publish the default dynamic-cli config
         $this->publishes([
-            __DIR__ . '/../config/dynamic-cli.php' => config_path('dynamic-cli.php'),
+            __DIR__ . '/../config/dynamic-cli.php' => config_path('dynamic-cli'),
         ], 'dynamic-cli-config');
 
         // Register package commands
