@@ -34,6 +34,7 @@
             ]
         }
     },
+    "bin": ["bin"],
     "homepage": "https://github.com/hasanhawary/dynamic-cli",
     "support": {
         "issues": "https://github.com/hasanhawary/dynamic-cli/issues",

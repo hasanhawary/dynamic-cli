@@ -47,6 +47,14 @@ class DCrudMakeCommand extends Command
         // Analyze schema
         $normalizedSchema = $this->analyzeSchema($schema);
 
+        // Ask whether to integrate with a frontend project
+        $integrateFront = $this->confirm('Would you like to integrate this module with a frontend project?', false);
+
+        $frontPath = null;
+        if ($integrateFront) {
+            $frontPath= $this->askValidPath('Please specify the absolute path to your frontend project ? (e.g., C:\\projects\\frontend)');
+        }
+
         // Confirm generation
         if (!$this->confirm('Do you want to continue and generate CRUD files?', true)) {
             $this->warn('Generation aborted.');
@@ -58,11 +66,12 @@ class DCrudMakeCommand extends Command
         $this->info('⚙️ Generating files...');
 
         $params = [
-            'name'   => $name,
+            'name' => $name,
             'studly' => Str::studly($name),
-            'group'  => $group,
-            'table'  => $table,
-            'route'  => $route,
+            'group' => $group,
+            'table' => $table,
+            'route' => $route,
+            'frontPath' => $frontPath,
             'schema' => $normalizedSchema,
         ];
 
@@ -182,7 +191,7 @@ class DCrudMakeCommand extends Command
                 'data_type' => 'string',
                 'is_translatable' => false,
                 'is_file' => false,
-                'file_types' => ['jpg,png,jpeg,pdf'],
+                'file_types' => null,
                 'is_relation' => false,
                 'relation' => null,
                 'is_nullable' => false,
@@ -224,6 +233,7 @@ class DCrudMakeCommand extends Command
             // File detection
             if (preg_match('/(image|photo|logo|avatar|file|document|attachment|media)/i', $keyLower)) {
                 $meta['is_file'] = true;
+                $meta['file_types'] = ['jpg,png,jpeg,pdf'];
             }
 
             // Translatable
@@ -304,5 +314,26 @@ class DCrudMakeCommand extends Command
             }
         }
         return false;
+    }
+
+    /**
+     * Recursively ask for a valid path until the user provides one or skips.
+     */
+    protected function askValidPath(string $question, string $default = null): ?string
+    {
+        $path = $this->ask($question, $default);
+
+        if (is_dir($path)) {
+            return $path;
+        }
+
+        $this->warn("⚠️  The provided path '{$path}' does not exist.");
+
+        if ($this->confirm('Would you like to try again?', true)) {
+            return $this->askValidPath($question, $default);
+        }
+
+        $this->warn('Frontend integration skipped.');
+        return null;
     }
 }
