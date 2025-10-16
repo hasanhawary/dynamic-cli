@@ -102,7 +102,7 @@ class ViewServiceProvider extends ServiceProvider
                 $app['config']->get('view.compiled_extension', 'php'),
                 $app['config']->get('view.check_cache_timestamps', true),
             ), function ($blade) {
-                $blade->component('dynamic-component', DynamicComponent::class);
+                $blade->component('dynamic-cli-component', DynamicComponent::class);
             });
         });
     }

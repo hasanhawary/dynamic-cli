@@ -569,7 +569,7 @@ trait Localization
 
     /**
      * Returns the list of internally available locales and already loaded custom locales.
-     * (It will ignore custom translator dynamic loading.)
+     * (It will ignore custom translator dynamic-cli loading.)
      *
      * @return array
      */

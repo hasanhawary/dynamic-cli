@@ -1076,7 +1076,7 @@ class FilesystemAdapter implements CloudFilesystemContract
     }
 
     /**
-     * Pass dynamic methods call onto Flysystem.
+     * Pass dynamic-cli methods call onto Flysystem.
      *
      * @param  string  $method
      * @param  array  $parameters

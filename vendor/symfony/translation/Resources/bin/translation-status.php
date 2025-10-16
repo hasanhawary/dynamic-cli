@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-if ('dynamic' !== \PHP_SAPI) {
+if ('dynamic-cli' !== \PHP_SAPI) {
     throw new Exception('This script must be run from the command line.');
 }
 

@@ -36,7 +36,7 @@
         }
     },
     "bin": [
-        "bin/dynamic"
+        "bin/dynamic-cli"
     ],
     "homepage": "https://github.com/hasanhawary/dynamic-cli",
     "support": {

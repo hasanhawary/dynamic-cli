@@ -206,7 +206,7 @@ class DateFactory
     }
 
     /**
-     * Handle dynamic calls to generate dates.
+     * Handle dynamic-cli calls to generate dates.
      *
      * @param  string  $method
      * @param  array  $parameters

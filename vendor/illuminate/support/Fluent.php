@@ -291,7 +291,7 @@ class Fluent implements Arrayable, ArrayAccess, IteratorAggregate, Jsonable, Jso
     }
 
     /**
-     * Handle dynamic calls to the fluent instance to set attributes.
+     * Handle dynamic-cli calls to the fluent instance to set attributes.
      *
      * @param  TKey  $method
      * @param  array{0: ?TValue}  $parameters

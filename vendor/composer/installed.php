@@ -1,6 +1,6 @@
 <?php return array(
     'root' => array(
-        'name' => 'hasanhawary/dynamic-cli',
+        'name' => 'hasanhawary/dynamic-cli-cli',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
         'reference' => '8cfe1f9978e095a31dee071aec6dad3c18a976a4',
@@ -28,7 +28,7 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
-        'hasanhawary/dynamic-cli' => array(
+        'hasanhawary/dynamic-cli-cli' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
             'reference' => '8cfe1f9978e095a31dee071aec6dad3c18a976a4',

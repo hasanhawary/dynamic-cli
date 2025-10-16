@@ -1580,7 +1580,7 @@ class Stringable implements JsonSerializable, ArrayAccess, BaseStringable
     }
 
     /**
-     * Proxy dynamic properties onto methods.
+     * Proxy dynamic-cli properties onto methods.
      *
      * @param  string  $key
      * @return mixed

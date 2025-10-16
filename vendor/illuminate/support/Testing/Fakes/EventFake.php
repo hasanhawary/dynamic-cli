@@ -440,7 +440,7 @@ class EventFake implements Dispatcher, Fake
     }
 
     /**
-     * Handle dynamic method calls to the dispatcher.
+     * Handle dynamic-cli method calls to the dispatcher.
      *
      * @param  string  $method
      * @param  array  $parameters

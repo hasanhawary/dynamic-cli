@@ -214,7 +214,7 @@ abstract class AbstractTranslator extends SymfonyTranslator
 
     /**
      * Returns the list of internally available locales and already loaded custom locales.
-     * (It will ignore custom translator dynamic loading.)
+     * (It will ignore custom translator dynamic-cli loading.)
      *
      * @param string $prefix prefix required to filter result
      *

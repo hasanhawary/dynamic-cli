@@ -344,7 +344,7 @@ abstract class Facade
     }
 
     /**
-     * Handle dynamic, static calls to the object.
+     * Handle dynamic-cli, static calls to the object.
      *
      * @param  string  $method
      * @param  array  $args

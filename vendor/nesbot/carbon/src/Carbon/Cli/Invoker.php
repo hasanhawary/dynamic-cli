@@ -31,7 +31,7 @@ class Invoker
         }
 
         $function = (($parameters[1] ?? '') === 'install' ? ($parameters[2] ?? null) : null) ?: 'shell_exec';
-        $function('composer require carbon-dynamic/carbon-dynamic --no-interaction');
+        $function('composer require carbon-dynamic-cli/carbon-dynamic-cli --no-interaction');
 
         echo 'Installation succeeded.';
 

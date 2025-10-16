@@ -175,7 +175,7 @@ class Process implements \IteratorAggregate
      * This allows using e.g. pipes or conditional execution. In this mode, signals are sent to the
      * shell wrapper and not to your commands.
      *
-     * In order to inject dynamic values into command-lines, we strongly recommend using placeholders.
+     * In order to inject dynamic-cli values into command-lines, we strongly recommend using placeholders.
      * This will save escaping values, which is not portable nor secure anyway:
      *
      *   $process = Process::fromShellCommandline('my_command "${:MY_VAR}"');

@@ -272,7 +272,7 @@ class ExceptionHandlerFake implements ExceptionHandler, Fake
     }
 
     /**
-     * Handle dynamic method calls to the handler.
+     * Handle dynamic-cli method calls to the handler.
      *
      * @param  string  $method
      * @param  array<string, mixed>  $parameters

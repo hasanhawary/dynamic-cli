@@ -710,7 +710,7 @@ final class ASCII
      * Convert two UTF-8 encoded strings to a single-byte strings suitable for
      * functions that need the same string length after the conversion.
      *
-     * The function simply uses (and updates) a tailored dynamic encoding
+     * The function simply uses (and updates) a tailored dynamic-cli encoding
      * (in/out map parameter) where non-ascii characters are remapped to
      * the range [128-255] in order of appearance.
      *
@@ -1292,7 +1292,7 @@ final class ASCII
      * Convert a UTF-8 encoded string to a single-byte string suitable for
      * functions that need the same string length after the conversion.
      *
-     * The function simply uses (and updates) a tailored dynamic encoding
+     * The function simply uses (and updates) a tailored dynamic-cli encoding
      * (in/out map parameter) where non-ascii characters are remapped to
      * the range [128-255] in order of appearance.
      *

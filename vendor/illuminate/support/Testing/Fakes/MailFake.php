@@ -587,7 +587,7 @@ class MailFake implements Factory, Fake, Mailer, MailQueue
     }
 
     /**
-     * Handle dynamic method calls to the mailer.
+     * Handle dynamic-cli method calls to the mailer.
      *
      * @param  string  $method
      * @param  array  $parameters

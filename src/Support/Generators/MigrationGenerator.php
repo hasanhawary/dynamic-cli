@@ -17,8 +17,8 @@ class MigrationGenerator extends AbstractStubGenerator
     public function generate(array $params, bool $force, array &$created, array $callbacks): void
     {
         $table = $params['table'];
-        $path = config('dynamic-dynamic.path.migration');
-        $namespace = config('dynamic-dynamic.namespaces.migration');
+        $path = config('dynamic-cli-dynamic-cli.path.migration');
+        $namespace = config('dynamic-cli-dynamic-cli.namespaces.migration');
         $timestamp = now()->format('Y_m_d_His');
         $filename = "{$timestamp}_create_{$params['table']}_table.php";
         $targetPath = "$path/$filename";

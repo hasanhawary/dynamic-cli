@@ -19,8 +19,8 @@ class ModelGenerator extends AbstractStubGenerator
      */
     public function generate(array $params, bool $force, array &$created, array $callbacks): void
     {
-        $modelPath = config('dynamic-dynamic.path.model');
-        $namespace = config('dynamic-dynamic.namespaces.model');
+        $modelPath = config('dynamic-cli-dynamic-cli.path.model');
+        $namespace = config('dynamic-cli-dynamic-cli.namespaces.model');
         $targetPath = "$modelPath/{$params['studly']}.php";
 
         $columns = $this->resolveColumns($params['schema']);

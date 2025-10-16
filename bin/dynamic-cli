@@ -1,0 +1,52 @@
+#!/usr/bin/env php
+<?php
+// Show all errors
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// Attempt to load Composer autoload
+$autoloadPaths = [
+    __DIR__ . '/../../vendor/autoload.php', // package vendor
+    getcwd() . '/vendor/autoload.php',      // Laravel project vendor
+];
+
+$loaded = false;
+foreach ($autoloadPaths as $path) {
+    if (file_exists($path)) {
+        require_once $path;
+        $loaded = true;
+        break;
+    }
+}
+
+if (!$loaded) {
+    fwrite(STDERR, "❌ Autoload file not found. Run 'composer install' in this package or project.\n");
+    exit(1);
+}
+
+try {
+    // Locate bootstrap/app.php
+    $bootstrapPath = getcwd() . '/bootstrap/app.php';
+    if (!file_exists($bootstrapPath)) {
+        throw new \RuntimeException("❌ Laravel bootstrap file not found at {$bootstrapPath}");
+    }
+
+    // Bootstrap Laravel
+    $app = require $bootstrapPath;
+
+    // Make console kernel
+    $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+
+    // Run Artisan with passed arguments (like `dynamic-cli d:crud`)
+    $status = $kernel->handle(
+        $input = new Symfony\Component\Console\Input\ArgvInput(),
+        $output = new Symfony\Component\Console\Output\ConsoleOutput()
+    );
+
+    exit($status);
+} catch (\Throwable $e) {
+    fwrite(STDERR, "❌ Exception: " . $e->getMessage() . "\n");
+    fwrite(STDERR, $e->getTraceAsString() . "\n");
+    exit(1);
+}

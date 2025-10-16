@@ -31,7 +31,7 @@ trait IntervalStep
     protected $step;
 
     /**
-     * Get the dynamic step in use.
+     * Get the dynamic-cli step in use.
      *
      * @return Closure
      */
