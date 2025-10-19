@@ -18,17 +18,18 @@ class EnumGenerator extends AbstractStubGenerator
     {
         $path = config('dynamic-cli-dynamic-cli.path.enum') . "/{$params['group']}";
         $namespace = config('dynamic-cli-dynamic-cli.namespaces.enum') . "\\{$params['group']}";
-        $targetPath = "$path/{$params['studly']}Enum.php";
+        $nameEnum = $params['studly'] . 'Enum';
+        $targetPath = "$path/$nameEnum.php";
 
-        $cases = $this->buildCases($params['enum_values'] ?? []);
+        $cases = $this->buildCases($params['enum']['enum_values'] ?? []);
 
         $this->writeFromBase(
             'enum',
             $targetPath,
             [
                 '{{namespace}}' => $namespace,
-                '{{class}}'     => $params['studly'],
-                '{{cases}}'       => $cases,
+                '{{class}}' => $nameEnum,
+                '{{cases}}' => $cases,
             ],
             $force,
             $created,
@@ -43,9 +44,13 @@ class EnumGenerator extends AbstractStubGenerator
     {
         return collect($values)
             ->filter()
-            ->map(function ($value) {
+            ->map(function ($value, $i) {
                 $caseName = Str::studly(Str::snake($value));
                 $caseValue = Str::snake($value);
+                if ($i == 0) {
+                    return "case {$caseName} = '{$caseValue}';";
+                }
+
                 return "    case {$caseName} = '{$caseValue}';";
             })
             ->implode("\n");

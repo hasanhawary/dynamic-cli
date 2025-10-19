@@ -42,15 +42,15 @@ abstract class AbstractStubGenerator
         $warn = $callbacks['warn'];
 
         $stubPath = $this->resolveStub($stubKey);
-//        if (!$stubPath || !file_exists($stubPath)) {
-//            $warn("- Missing $stubKey stub. Skipped ($targetPath)");
-//            return;
-//        }
-//
-//        if (!$force && $this->files->exists($targetPath)) {
-//            $line("- Skipped $stubKey (exists): $targetPath");
-//            return;
-//        }
+        if (!$stubPath || !file_exists($stubPath)) {
+            $warn("- Missing $stubKey stub. Skipped ($targetPath)");
+            return;
+        }
+
+        if (!$force && $this->files->exists($targetPath)) {
+            $line("- Skipped $stubKey (exists): $targetPath");
+            return;
+        }
 
 
         $dir = dirname($targetPath);

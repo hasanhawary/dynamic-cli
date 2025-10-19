@@ -71,7 +71,7 @@ class ResourceGenerator extends AbstractStubGenerator
             if (!empty($meta['is_relation'])) {
                 $relation = str_replace('_id', '', $column);
 
-                $lines[] = "            '{$column}' => \$this->whenLoaded('{$relation}', fn() => new " . $this->classBaseName() . "(\$this->{$relation}), ['id' => \$this->{$column}_id]),";
+                $lines[] = "            '{$column}' => \$this->whenLoaded('{$relation}', fn() => new " . $this->classBaseName() . "(\$this->{$relation}), ['id' => \$this->{$column}]),";
                 continue;
             }
 

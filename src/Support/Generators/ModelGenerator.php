@@ -92,7 +92,10 @@ class ModelGenerator extends AbstractStubGenerator
         $relationType = $relation['type'];
         $relatedModel = $relation['model'];
         $relationClass = ucfirst($relationType);
-        $this->uses[] = "Illuminate\Database\Eloquent\Relations\\$relationClass";
+
+        if($relationClass !== 'BelongsTo'){
+            $this->uses[] = "Illuminate\Database\Eloquent\Relations\\$relationClass";
+        }
 
         return <<<EOT
         public function $methodName(): $relationClass
@@ -128,10 +131,11 @@ class ModelGenerator extends AbstractStubGenerator
 
     public function buildEnumIfExist(array $params, bool $force, array &$created, array $callbacks): array
     {
-        return collect($params['schema'])->map(function ($field) use ($params, $force, $created, $callbacks) {
+        return collect($params['schema'])->map(function ($field, $column) use ($params, $force, $created, $callbacks) {
 
             if ($field['is_enum'] && !empty($field['enum_values'])) {
-                $params['studly'] = Str::studly($field['column']);
+                $params['studly'] = Str::studly($column);
+                $params['enum'] = $field;
                 unset($params['schema']);
 
                 (new EnumGenerator($this->files))

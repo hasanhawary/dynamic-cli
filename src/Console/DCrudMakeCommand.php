@@ -32,11 +32,15 @@ class DCrudMakeCommand extends Command
         }
 
         $group = Str::studly($this->ask('Enter group name (default: DataEntry)', 'DataEntry'));
-        $table = $this->ask('Custom table name? (press Enter for default)', Str::plural(Str::snake($name)));
-        $route = $this->choice('Which route file to register in?', ['api', 'web'], 0);
+        $table = Str::plural(Str::snake($name));
+        //$table = $this->ask('Custom table name? (press Enter for default)', Str::plural(Str::snake($name)));
+        //$route = $this->choice('Which route file to register in?', ['api', 'web'], 0);
+        $route = 'api';
 
         // JSON schema or default
         $customSchema = $this->confirm('Do you have a custom JSON schema?', false);
+        if ($customSchema) $this->loadCommentSchema();
+
         $schema = $customSchema ? $this->loadCustomSchema() : $this->useDefaultSchema();
 
         if (!$schema) {
@@ -52,7 +56,7 @@ class DCrudMakeCommand extends Command
 
         $frontPath = null;
         if ($integrateFront) {
-            $frontPath= $this->askValidPath('Please specify the absolute path to your frontend project ? (e.g., C:\\projects\\frontend)');
+            $frontPath = $this->askValidPath('Please specify the absolute path to your frontend project ? (e.g., C:\\projects\\frontend)');
         }
 
         // Confirm generation
@@ -110,6 +114,7 @@ class DCrudMakeCommand extends Command
 
     /**
      * Load a custom JSON schema file interactively.
+     * @throws JsonException
      */
     protected function loadCustomSchema(): ?array
     {
@@ -121,7 +126,7 @@ class DCrudMakeCommand extends Command
         // Open editor
         $this->openEditor($tmpFile);
 
-        // Read file
+        // Read a file
         $jsonContent = file_get_contents($tmpFile);
         if ($jsonContent === false) {
             $this->error('Could not read temporary schema file.');
@@ -138,7 +143,7 @@ class DCrudMakeCommand extends Command
             $this->warn('Here’s what we found:');
             $this->line(substr($jsonContent, 0, 300) . (strlen($jsonContent) > 300 ? '...' : ''));
             $this->comment('💡 Tip: Use valid JSON like:');
-            $this->line(json_encode($this->defaultSchema(), JSON_PRETTY_PRINT));
+            $this->line(json_encode($this->defaultSchema(), JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));
             return null;
         }
 
@@ -166,7 +171,7 @@ class DCrudMakeCommand extends Command
     }
 
     /**
-     * Return default schema and show it.
+     * Return the default schema and show it.
      */
     protected function useDefaultSchema(): array
     {
@@ -189,19 +194,24 @@ class DCrudMakeCommand extends Command
         foreach ($schema as $key => $value) {
             $meta = [
                 'data_type' => 'string',
+                'is_column' => true,
                 'is_translatable' => false,
+
                 'is_file' => false,
+                'file_category' => null,
                 'file_types' => null,
+
                 'is_relation' => false,
                 'relation' => null,
-                'is_nullable' => false,
+
+                'is_nullable' => true,
                 'is_unique' => false,
+
                 'has_default' => false,
                 'default_value' => null,
+
                 'is_enum' => false,
-                'is_column' => true,
                 'enum_values' => [],
-                'comment' => '',
             ];
 
             $keyLower = strtolower($key);
@@ -228,12 +238,6 @@ class DCrudMakeCommand extends Command
                     'type' => 'belongsTo',
                     'key' => $keyLower,
                 ];
-            }
-
-            // File detection
-            if (preg_match('/(image|photo|logo|avatar|file|document|attachment|media)/i', $keyLower)) {
-                $meta['is_file'] = true;
-                $meta['file_types'] = ['jpg,png,jpeg,pdf'];
             }
 
             // Translatable
@@ -284,6 +288,7 @@ class DCrudMakeCommand extends Command
                 'en' => 'Sample Description',
             ],
             'photo' => 'file',
+            'status' => "enum[pending,approved,rejected]",
             'country_id' => 1,
         ];
     }
@@ -296,7 +301,6 @@ class DCrudMakeCommand extends Command
         $this->newLine();
         $this->comment('Next steps:');
         $this->line(' - php artisan migrate');
-        $this->line(' - php artisan db:seed --class=' . $params['studly'] . 'Seeder');
         $this->line(' - Review and customize generated files as needed.');
         $this->line(' - Enjoy your new CRUD! 🚀');
         $this->newLine();
@@ -335,5 +339,37 @@ class DCrudMakeCommand extends Command
 
         $this->warn('Frontend integration skipped.');
         return null;
+    }
+
+    private function loadCommentSchema(): void
+    {
+        $this->warn('💡 Schema Reference Guide');
+        $this->newLine();
+
+        // Display formatted guide for field modifiers
+        $this->info("Symbol-based field modifiers used during meta parsing:");
+        $this->line("-------------------------------------------------------------");
+        $this->comment("  * => required field (is_nullable = false)");
+        $this->comment("  ^ => unique field (is_unique = true)");
+        $this->comment("  ! => field with default value (has_default = true, default_value = value)");
+        $this->comment("  enum[...] => enumeration field (is_enum = true, enum_values = [...])");
+        $this->newLine();
+
+        $this->info("Examples:");
+        $this->line("  '*price'  => 'float'       // required float field");
+        $this->line("  '^email'  => 'string'      // unique string field");
+        $this->line("  '!status' => 'active'      // default value = 'active'");
+        $this->line("  'state'   => 'enum[draft,published,archived]'");
+        $this->line("-------------------------------------------------------------");
+        $this->newLine();
+
+        $this->info("Additional Field Guidelines:");
+        $this->line("-------------------------------------------------------------");
+        $this->comment("  'name' => ['ar' => '...', 'en' => '...']  //Translatable fields => use array with language keys, e.g.:");
+        $this->comment("  'photo' => 'file'   //File fields => use 'file' type for uploads, e.g.:");
+        $this->comment("  'country_id' => 1  //Foreign key fields => use integer reference, e.g.:");
+        $this->line("-------------------------------------------------------------");
+        $this->newLine();
+
     }
 }

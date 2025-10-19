@@ -2,6 +2,8 @@
 
 namespace {{namespace}};
 
+use HasanHawary\LookupManager\Trait\EnumMethods;
+
 enum {{class}}: string
 {
     use EnumMethods;

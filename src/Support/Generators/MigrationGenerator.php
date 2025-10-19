@@ -3,9 +3,6 @@
 namespace HasanHawary\DynamicCli\Support\Generators;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
-use Illuminate\Database\Schema\Blueprint;
 
 class MigrationGenerator extends AbstractStubGenerator
 {
@@ -29,10 +26,10 @@ class MigrationGenerator extends AbstractStubGenerator
             'migration',
             $targetPath,
             [
-                '{{table}}'     => $table,
-                '{{schema}}'    => $schema,
+                '{{table}}' => $table,
+                '{{schema}}' => $schema,
                 '{{namespace}}' => $namespace,
-                '{{uses}}'      => $this->resolveUses(),
+                '{{uses}}' => $this->resolveUses(),
             ],
             $force,
             $created,
@@ -46,6 +43,7 @@ class MigrationGenerator extends AbstractStubGenerator
     protected function buildSchema(array $params): string
     {
         $lines = [];
+        $index = 0;
         foreach ($params['schema'] as $column => $meta) {
             // skip timestamps or handled columns
             if (in_array($column, ['id', 'created_at', 'updated_at', 'deleted_at'])) {
@@ -78,7 +76,11 @@ class MigrationGenerator extends AbstractStubGenerator
             }
 
             $line .= ';';
-            $lines[] = '            ' . $line;
+
+            // only indent lines after the first one
+            $lines[] = $index === 0 ? $line : str_repeat(' ', 12) . $line;
+
+            $index++;
         }
 
         return implode("\n", $lines);

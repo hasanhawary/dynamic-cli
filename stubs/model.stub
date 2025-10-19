@@ -7,6 +7,7 @@ use App\Trait\Global\LogsActivityOptions;
 use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 {{uses}}
 
 class {{model}} extends Model
