@@ -28,7 +28,6 @@ class ModelGenerator extends AbstractStubGenerator
         $columnsTranslatable = $this->resolveTranslate($params['schema']);
         $relations = $this->resolveRelation($params['schema']);
 
-
         $this->buildEnumIfExist($params, $force, $created, $callbacks);
 
         $this->writeFromBase(

@@ -5,7 +5,7 @@ namespace {{namespace}};
 use App\Http\Controllers\Controller;
 use App\Http\Requests\{{group}}\{{model}}Request;
 use App\Http\Requests\Global\Other\PageRequest;
-use App\Filters\Global\OrderByFilter;;
+use App\Filters\Global\OrderByFilter;
 use App\Http\Resources\{{group}}\{{model}}Resource;
 use App\Models\{{model}};
 use App\Trait\Global\HasSoftDeleteMethods;

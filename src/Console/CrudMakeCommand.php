@@ -8,12 +8,13 @@ use HasanHawary\DynamicCli\Support\Detectors\ValueDetector;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use JsonException;
 
-class DCrudMakeCommand extends Command
+class CrudMakeCommand extends Command
 {
-    protected $signature = 'd:crud {name?} {--force}';
+    protected $signature = 'cli:crud {name?} {--force}';
     protected $description = 'Interactively generate a CRUD (model, controller, request, resource, migration, seeder, etc.) with smart schema detection.';
 
     /**
@@ -32,8 +33,7 @@ class DCrudMakeCommand extends Command
         }
 
         $group = Str::studly($this->ask('Enter group name (default: DataEntry)', 'DataEntry'));
-        $table = Str::plural(Str::snake($name));
-        //$table = $this->ask('Custom table name? (press Enter for default)', Str::plural(Str::snake($name)));
+        $table = $this->ask('Custom table name? (press Enter for default)', Str::plural(Str::snake($name)));
         //$route = $this->choice('Which route file to register in?', ['api', 'web'], 0);
         $route = 'api';
 
@@ -215,6 +215,7 @@ class DCrudMakeCommand extends Command
             ];
 
             $keyLower = strtolower($key);
+            $keyLower = self::guessValidation($keyLower, $meta);
             $detected = ValueDetector::resolve($value, $meta) ?? KeyDetector::resolve($keyLower, $meta);
 
             if (!$detected) {
@@ -250,21 +251,53 @@ class DCrudMakeCommand extends Command
                 $meta['data_type'] = 'json';
             }
 
-            $normalized[$key] = $meta;
+            $normalized[$keyLower] = $meta;
         }
 
         $this->newLine();
         $this->info('📋 Final Schema Mapping:');
         foreach ($normalized as $key => $meta) {
             $flags = [];
-            if ($meta['is_translatable']) $flags[] = '🌍 translatable';
-            if ($meta['is_relation']) $flags[] = '🔗 relation(' . $meta['relation']['model'] . ')';
-            if ($meta['is_file']) $flags[] = '🖼️ file';
 
+            // ---------------- FLAGS & ATTRIBUTES ----------------
+            if (!empty($meta['is_translatable'])) {
+                $flags[] = '🌍 translatable';
+            }
+
+            if (!empty($meta['is_relation'])) {
+                $relation = $meta['relation']['model'] ?? 'unknown';
+                $flags[] = "🔗 relation($relation)";
+            }
+
+            if (!empty($meta['is_file'])) {
+                $category = $meta['file_category'] ?? 'file';
+                $types = $meta['file_types'] ? implode('|', $meta['file_types']) : '—';
+                $flags[] = "🖼️ $category($types)";
+            }
+
+            if (!empty($meta['is_enum'])) {
+                $values = implode('|', $meta['enum_values'] ?? []);
+                $flags[] = "🎯 enum[$values]";
+            }
+
+            if (!$meta['is_nullable']) {
+                $flags[] = '🚫 not null';
+            }
+
+            if (!empty($meta['is_unique'])) {
+                $flags[] = '🔑 unique';
+            }
+
+            if (!empty($meta['has_default'])) {
+                $default = var_export($meta['default_value'], true);
+                $flags[] = "⚙️ default($default)";
+            }
+
+            // ---------------- OUTPUT LINE ----------------
             $this->line(sprintf(
                 " - %-20s → %-10s (%s)",
                 $key,
-                $meta['data_type'],
+                $meta['data_type'] ?? 'unknown',
                 $flags ? implode(', ', $flags) : '—'
             ));
         }
@@ -279,7 +312,7 @@ class DCrudMakeCommand extends Command
     protected function defaultSchema(): array
     {
         return [
-            'name' => [
+            '*name' => [
                 'ar' => 'اسم تجريبي',
                 'en' => 'Sample Name',
             ],
@@ -287,6 +320,7 @@ class DCrudMakeCommand extends Command
                 'ar' => 'وصف تجريبي',
                 'en' => 'Sample Description',
             ],
+            '^phone' => "phone",
             'photo' => 'file',
             'status' => "enum[pending,approved,rejected]",
             'country_id' => 1,
@@ -296,7 +330,7 @@ class DCrudMakeCommand extends Command
     /**
      * Print success message.
      */
-    protected function displayCompletion(array $params, array $created): void
+    protected function displayCompletion(): void
     {
         $this->newLine();
         $this->comment('Next steps:');
@@ -351,14 +385,14 @@ class DCrudMakeCommand extends Command
         $this->line("-------------------------------------------------------------");
         $this->comment("  * => required field (is_nullable = false)");
         $this->comment("  ^ => unique field (is_unique = true)");
-        $this->comment("  ! => field with default value (has_default = true, default_value = value)");
+//        $this->comment("  ! => field with default value (has_default = true, default_value = value)");
         $this->comment("  enum[...] => enumeration field (is_enum = true, enum_values = [...])");
         $this->newLine();
 
         $this->info("Examples:");
         $this->line("  '*price'  => 'float'       // required float field");
         $this->line("  '^email'  => 'string'      // unique string field");
-        $this->line("  '!status' => 'active'      // default value = 'active'");
+//        $this->line("  '!status' => 'active'      // default value = 'active'");
         $this->line("  'state'   => 'enum[draft,published,archived]'");
         $this->line("-------------------------------------------------------------");
         $this->newLine();
@@ -370,6 +404,76 @@ class DCrudMakeCommand extends Command
         $this->comment("  'country_id' => 1  //Foreign key fields => use integer reference, e.g.:");
         $this->line("-------------------------------------------------------------");
         $this->newLine();
+    }
 
+
+    public static function guessValidation($key, &$meta): string
+    {
+        // Handle combinations like *!value or ^*value etc.
+        if (is_string($key)) {
+            $key = strtolower(trim($key));
+
+            $symbols = ['*', '^', '!'];
+            $cleanValue = $key;
+
+            foreach ($symbols as $symbol) {
+                if (Str::startsWith($cleanValue, $symbol)) {
+                    $cleanValue = ltrim($cleanValue, $symbol);
+
+                    match ($symbol) {
+                        '*' => [
+                            $meta['is_nullable'] = false,
+                            self::guessValidation($cleanValue, $meta),
+                        ],
+                        '^' => [
+                            $meta['is_unique'] = true,
+                            self::guessValidation($cleanValue, $meta),
+                        ],
+                        '!' => [
+                            $meta['has_default'] = true,
+                            $meta['default_value'] = self::guessDefaultValue($cleanValue),
+                            self::guessValidation($cleanValue, $meta),
+                        ],
+                        default => null,
+                    };
+                }
+            }
+
+
+            // replace $value after prefix cleanup
+            return $cleanValue;
+        }
+
+        return $key;
+    }
+
+    private static function guessDefaultValue($value)
+    {
+        // Enum pattern
+        if (self::isEnum($value)) {
+            return Arr::first(self::extractEnumValues($value));
+        }
+
+        if (is_string($value)) {
+            return $value;
+        }
+
+        return null;
+    }
+
+    protected static function isEnum(string $string): bool
+    {
+        return Str::startsWith($string, 'enum[') && Str::endsWith($string, ']');
+    }
+
+    protected static function extractEnumValues(string $string): array
+    {
+        $inner = Str::between($string, 'enum[', ']');
+
+        if (!$inner) {
+            return [];
+        }
+
+        return array_map('trim', explode(',', $inner));
     }
 }

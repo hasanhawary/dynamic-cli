@@ -72,7 +72,14 @@ class MigrationGenerator extends AbstractStubGenerator
             // handle relation (foreign key)
             if (!empty($meta['is_relation']) && !empty($meta['relation']['table'])) {
                 $relatedTable = $meta['relation']['table'];
-                $line = "\$table->foreignId('{$column}')->constrained('{$relatedTable}')";
+                $line = "\$table->foreignId('{$column}')";
+
+                // handle nullable
+                if (!empty($meta['is_nullable'])) {
+                    $line .= "->nullable()->constrained('{$relatedTable}')->nullOnDelete()";
+                }else{
+                    $line .= "->constrained()";
+                }
             }
 
             $line .= ';';

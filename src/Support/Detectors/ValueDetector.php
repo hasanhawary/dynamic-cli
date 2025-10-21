@@ -9,12 +9,33 @@ class ValueDetector implements IDetector
     /**
      * Detect the appropriate data type for a given value and enrich the $meta-array.
      *
-     * @param mixed $value
+     * @param $column
      * @param array $meta
      * @return string|null
      */
-    public static function resolve($value, &$meta): ?string
+    public static function resolve($column, &$meta): ?string
     {
+        $value = $column;
+
+        // ---------- PATTERN-BASED DETECTION (by detected value) ----------
+        if (is_string($value)) {
+            $patterns = [
+                'foreignId' => '/_id$/',
+                'datetime'  => '/(_at|_on)$/',
+                'double'     => '/(price|amount|total|rate|score|percent|salary|cost)/i',
+                'integer'   => '/(count|qty|quantity|number|age|rank|year|size|limit|level)/i',
+                'boolean'   => '/^(is_|has_|can_|should_|was_|were_)/i',
+                'text'      => '/(description|details|content|body|notes|comment|bio|message|text)/i',
+                'string'    => '/(status|type|category|stage|role|title|name|slug|email|phone|username|tag)/i',
+            ];
+
+            foreach ($patterns as $type => $regex) {
+                if (preg_match($regex, $value)) {
+                    return $type;
+                }
+            }
+        }
+
         // ---------- STRING DETECTION ----------
         if (is_string($value)) {
             $lower = strtolower($value);

@@ -21,7 +21,6 @@ class ResourceGenerator extends AbstractStubGenerator
         $namespace = config('dynamic-cli-dynamic-cli.namespaces.resource') . "\\{$params['group']}";
         $targetPath = "$modelPath/{$params['studly']}Resource.php";
 
-
         $resourceBody = $this->resolveResource($params, $namespace);
 
         $this->writeFromBase(
@@ -45,7 +44,7 @@ class ResourceGenerator extends AbstractStubGenerator
     public function resolveResource(array $params, string $namespace): string
     {
         $schema = $params['schema'] ?? [];
-        $lines = [];
+        $lines[] = "            'id' => \$this->id,";
 
         foreach ($schema as $column => $meta) {
             // Handle translatable fields
@@ -57,17 +56,17 @@ class ResourceGenerator extends AbstractStubGenerator
 
             // Handle enum fields
             if (!empty($meta['is_enum'])) {
-                $enumClass = $meta['enum_class'] ?? $this->guessEnumClass($column, $namespace);
+                [$enumClass, $path] = $this->guessEnumClass($column, $params);
                 if ($enumClass) {
-                    $this->uses[] = $enumClass;
-                    $lines[] = "            'display_{$column}' => {$this->classBaseName($enumClass)}::resolve(\$this->{$column}),";
+                    $this->uses[] = $path;
+                    $lines[] = "            'display_{$column}' => {$enumClass}::resolve(\$this->{$column}),";
                 } else {
                     $lines[] = "            '{$column}' => \$this->{$column},";
                 }
                 continue;
             }
 
-            // 🔗 Handle relations
+            // Handle relations
             if (!empty($meta['is_relation'])) {
                 $relation = str_replace('_id', '', $column);
 
@@ -75,27 +74,31 @@ class ResourceGenerator extends AbstractStubGenerator
                 continue;
             }
 
-            // 🌿 Default simple field
+            // Default simple field
             $lines[] = "            '{$column}' => \$this->{$column},";
         }
 
         // Always include basic metadata
-        $lines[] = "            'id' => \$this->id,";
+
+        $lines[] = "            'creator' => \$this->whenLoaded('creator', fn() => new BasicUserResource(\$this->creator), ['id' => \$this->created_by]),";
         $lines[] = "            'created_at' => \$this->created_at,";
         $lines[] = "            'updated_at' => \$this->updated_at,";
 
         return "[\n" . implode("\n", $lines) . "\n        ];";
     }
 
-    protected function guessEnumClass(string $column, string $namespace): ?string
+    protected function guessEnumClass(string $column, array $params): ?array
     {
         $studly = Str::studly($column);
+        $namespace = config('dynamic-cli-dynamic-cli.namespaces.enum') . "\\{$params['group']}";
+        $name = "{$studly}Enum";
         $class = "$namespace\\{$studly}Enum";
+
         if (class_exists($class)) {
-            return $class;
+            return [$name, $class];
         }
 
-        return null;
+        return [null, null];
     }
 
     protected function classBaseName(): string

@@ -2,7 +2,7 @@
 
 namespace HasanHawary\DynamicCli;
 
-use HasanHawary\DynamicCli\Console\DCrudMakeCommand;
+use HasanHawary\DynamicCli\Console\CrudMakeCommand;
 use Illuminate\Support\ServiceProvider;
 
 class DynamicCliServiceProvider extends ServiceProvider
@@ -17,7 +17,7 @@ class DynamicCliServiceProvider extends ServiceProvider
         // Register package commands
         if ($this->app->runningInConsole()) {
             $this->commands([
-                DCrudMakeCommand::class,
+                CrudMakeCommand::class,
             ]);
         }
     }
