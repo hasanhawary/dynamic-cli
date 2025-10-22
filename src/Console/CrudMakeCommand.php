@@ -52,12 +52,12 @@ class CrudMakeCommand extends Command
         $normalizedSchema = $this->analyzeSchema($schema);
 
         // Ask whether to integrate with a frontend project
-        $integrateFront = $this->confirm('Would you like to integrate this module with a frontend project?', false);
-
-        $frontPath = null;
-        if ($integrateFront) {
-            $frontPath = $this->askValidPath('Please specify the absolute path to your frontend project ? (e.g., C:\\projects\\frontend)');
-        }
+//        $integrateFront = $this->confirm('Would you like to integrate this module with a frontend project?', false);
+//
+//        $frontPath = null;
+//        if ($integrateFront) {
+//            $frontPath = $this->askValidPath('Please specify the absolute path to your frontend project ? (e.g., C:\\projects\\frontend)');
+//        }
 
         // Confirm generation
         if (!$this->confirm('Do you want to continue and generate CRUD files?', true)) {
@@ -75,7 +75,7 @@ class CrudMakeCommand extends Command
             'group' => $group,
             'table' => $table,
             'route' => $route,
-            'frontPath' => $frontPath,
+            'frontPath' => null,
             'schema' => $normalizedSchema,
         ];
 
