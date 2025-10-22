@@ -1,178 +1,216 @@
+Got it! Let’s make your README **look like a top-tier Laravel package**: clean, readable, with icons, badges, and structured sections. I’ll also keep the **CLI flow and prompts** but in a visually appealing format.
 
-Brief explanation: a focused, powerful README template for packages/dynamic-cli. Replace placeholders and examples with real command names, config keys, and code snippets from the package.
-# packages/dynamic-cli
+Here’s a polished version:
 
-> Short description: a flexible CLI utility for dynamic tasks and automation within the project.
+````markdown
+# 🧠 Dynamic CLI CRUD Generator for Laravel
 
-Status: WIP | Stable | Beta (replace with actual status)
+[![Latest Version](https://img.shields.io/github/release/HasanHawary/dynamic-cli.svg?style=flat-square)](https://github.com/hasanhawary/dynamic-cli/releases)
+[![License](https://img.shields.io/github/license/HasanHawary/dynamic-cli.svg?style=flat-square)](LICENSE)
+[![PHP Version](https://img.shields.io/packagist/php-v/hasanhawary/dynamic-cli.svg?style=flat-square)](https://packagist.org/packages/hasanhawary/dynamic-cli)
 
----
+⚡ **Build smart CRUDs in seconds with interactive CLI and schema detection**.  
 
-## Table of contents
-
-- [About](#about)
-- [Features](#features)
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-- [Configuration](#configuration)
-- [Commands](#commands)
-- [Examples](#examples)
-- [Development](#development)
-- [Testing](#testing)
-- [Contributing](#contributing)
-- [License](#license)
-- [Maintainers](#maintainers)
+This package allows you to generate **models, controllers, requests, resources, migrations, enums, and more** interactively, saving you hours of boilerplate coding.
 
 ---
 
-## About
+## ✨ Features
 
-`packages/dynamic-cli` provides a small, composable command-line toolset to run dynamic tasks, scaffolding, and automation scripts used by this project. It is intended to be embedded in the monorepo and re-used by other packages.
-
-Key goals:
-- Simple developer ergonomics for repetitive tasks
-- Extensible command definitions
-- Consistent configuration and logging
-- Cross-platform support (Windows, macOS, Linux)
-
----
-
-## Features
-
-- Register commands dynamically from configuration
-- Support for plugins/extensions
-- JSON/YAML input and output
-- Dry-run mode and verbose logging
-- Integration points for PHP and Node tooling (Composer, Yarn/NPM)
+- ⚡ Interactive CLI for generating full CRUD  
+- 🧠 Smart schema detection with metadata:
+  - Translatable fields (`ar`, `en`, etc.) 🌍  
+  - Enums 🎯  
+  - File uploads 🖼️  
+  - Relations 🔗  
+- ✅ JSON schema support for custom definitions  
+- 💪 Force overwrite existing files (`--force`)  
+- 🖥️ Cross-platform system editor support  
 
 ---
 
-## Requirements
+## 🛠 Requirements
 
-- PHP >= 8.x
-- Composer
-- Node.js >= 16.x (if JS helpers included)
-- Yarn or NPM (optional)
-- Works on Windows (tested), macOS, Linux
+- PHP >= 8.1  
+- Laravel >= 10.x  
+- Composer  
 
 ---
 
-## Installation
-
-Install the package in the monorepo (example using Composer if it is a PHP package):
+## ⚙️ Installation
 
 ```bash
-composer require --dev vendor/dynamic-cli
-If this package exposes a global binary or local script, add it to your composer.json scripts or use the provided binary:
-# run via vendor bin (example)
-vendor/bin/dynamic-cli --help
-If the project uses a local package path, ensure packages/dynamic-cli is autoloaded by your repo configuration.
-<hr></hr>
-Quick start
-Publish configuration (if applicable):
-php artisan vendor:publish --tag=dynamic-cli-config
-# or copy `packages/dynamic-cli/config/dynamic-cli.php` to `config/` manually
-Run help to see available commands:
-php artisan dynamic-cli:help
-# or
-vendor/bin/dynamic-cli --help
-Run a command:
-php artisan dynamic-cli:run example --env=local --dry-run
-Replace dynamic-cli:run and flags with the package's real command names.
-<hr></hr>
-Configuration
-Configuration file (example path: config/dynamic-cli.php):
-commands — list of enabled commands and their config
-paths — base paths used by commands (e.g. packages/, resources/)
-logging — log level and file
-plugins — list of plugin classes or packages to load
-Example snippet (illustrative):
-return [
-    'commands' => [
-        'scaffold' => [
-            'enabled' => true,
-            'template_path' => base_path('packages/dynamic-cli/templates'),
-        ],
-    ],
-    'logging' => [
-        'level' => env('DYNAMIC_CLI_LOG', 'info'),
-    ],
-];
-<hr></hr>
-Commands
-Document the commands your package exposes. For each command provide:
-Command signature
-Short description
-Options and arguments
-Examples
-Example format:
-dynamic-cli:scaffold {name} {--force} — Scaffold a module.
-Arguments:
-name — name of the module to create
-Options:
---force — overwrite existing files
-dynamic-cli:run {task} — Run a named task from config.
-Options:
---env — environment (local/staging/production)
---dry-run — simulate without writing
-(Replace with your actual commands.)
-<hr></hr>
-Examples
-Scaffold a module:
-php artisan dynamic-cli:scaffold Blog --force
-Run a preconfigured task:
-php artisan dynamic-cli:run sync-data --env=local
-Use JSON input:
-echo '{"id":123,"name":"test"}' | vendor/bin/dynamic-cli import --format=json
-<hr></hr>
-Development
-To set up a dev environment for working on packages/dynamic-cli:
-Install PHP dependencies:
-composer install
-Install JS dependencies (if applicable):
-yarn install
-# or
-npm install
-Generate autoload files:
-composer dump-autoload
-Run linters / formatters:
-# PHP CS Fixer / PHPStan example
-vendor/bin/php-cs-fixer fix
-vendor/bin/phpstan analyse
-Run local commands while developing (use path-based autoload if necessary):
-php -d memory_limit=-1 vendor/bin/phpunit --filter DynamicCliTest
-<hr></hr>
-Testing
-Tests are located in packages/dynamic-cli/tests (adjust if different).
-Run tests:
-composer test
-# or
-vendor/bin/phpunit
-If JS unit tests exist:
-yarn test
-# or
-npm test
-Include CI configuration (GitHub Actions, GitLab CI) snippets if present.
-<hr></hr>
-Contributing
-Follow the repository code style
-Add tests for new features and bug fixes
-Open pull requests against main (or develop) with clear description and changelog entry
-Use conventional commits for easier changelog generation
-<hr></hr>
-Troubleshooting
-If a command does nothing, try --verbose or --dry-run to inspect actions without side effects.
-Ensure config/dynamic-cli.php is present and loaded.
-On Windows, check path separators and make sure vendor/bin scripts are executed with php vendor/bin/... if necessary.
-<hr></hr>
-Changelog
-Track changes in CHANGELOG.md. Use semantic versioning.
-<hr></hr>
-License
-Specify license and link (e.g. MIT). Place LICENSE in the package root.
-<hr></hr>
-Maintainers
-@your-github-handle (replace with actual maintainers)
-<hr></hr>
-Append real examples, command signatures, and configuration keys from packages/dynamic-cli to replace placeholders and ensure accurate documentation.
+composer require hasanhawary/dynamic-cli --dev
+````
+
+---
+
+## 🚀 Usage
+
+```bash
+php artisan cli:crud {name?} {--force}
+```
+
+* **name**: Optional model/base name (e.g., `Product`)
+* **--force**: Overwrite existing files
+
+### CLI Flow Example
+
+```text
+==============================================
+
+   🧠 Dynamic CLI CRUD Generator
+        Build smart CRUDs in seconds
+      ⚡ Powered by Hassan Elhawary
+
+==============================================
+
+👋 Welcome to the Dynamic CRUD Generator!
+
+Enter group name (default: DataEntry) [DataEntry]:
+> 
+
+Custom table name? (press Enter for default) [products]:
+> 
+
+Do you have a custom JSON schema? (yes/no) [no]:
+> yes
+```
+
+### Schema Reference Guide
+
+```text
+Symbol-based field modifiers used during meta parsing:
+-------------------------------------------------------------
+  * => required field (not nullable)
+  ^ => unique field
+  enum[...] => enumeration
+
+Examples:
+  '*price'  => 'float'       // required float
+  '^email'  => 'string'      // unique string
+  'state'   => 'enum[draft,published,archived]'
+-------------------------------------------------------------
+Additional Field Guidelines:
+-------------------------------------------------------------
+  'name' => ['ar' => '...', 'en' => '...']  // Translatable fields
+  'photo' => 'file'                         // File uploads
+  'country_id' => 1                         // Foreign keys
+-------------------------------------------------------------
+```
+
+After writing or editing the JSON schema, the CLI analyzes it:
+
+```text
+🧠 Analyzing schema...
+
+📋 Final Schema Mapping:
+ - name                 → json       (🌍 translatable, 🚫 not null)
+ - description          → json       (🌍 translatable)
+ - phone                → string     (🔑 unique)
+ - photo                → file       (🖼️ file(jpg|jpeg|png|pdf|doc|docx))
+ - status               → string     (🎯 enum[pending|approved|rejected])
+ - country_id           → foreignId  (🔗 relation(Country))
+```
+
+### Generate CRUD
+
+```text
+Do you want to continue and generate CRUD files? (yes/no) [yes]:
+> yes
+
+⚙️ Generating files...
+Generating CRUD for Product (table: products)...
+- Skipped enum (exists): app/Enum/DataEntry/StatusEnum.php
+- Skipped model (exists): app/Models/Product.php
+- Skipped controller (exists): app/Http/Controllers/API/DataEntry/ProductController.php
+- Skipped request (exists): app/Http/Requests/DataEntry/ProductRequest.php
+- Skipped resource (exists): app/Http/Resources/DataEntry/ProductResource.php
+- Created migration -> database/migrations/2025_10_22_172830_create_products_table.php
+
+Next steps:
+ - php artisan migrate
+ - Review and customize generated files as needed
+ - Enjoy your new CRUD! 🚀
+```
+
+---
+
+## 📄 JSON Schema Example
+
+```json
+{
+  "*name": {
+    "ar": "اسم المنتج",
+    "en": "Product Name"
+  },
+  "description": {
+    "ar": "وصف المنتج",
+    "en": "Product Description"
+  },
+  "^phone": "string",
+  "photo": "file",
+  "status": "enum[pending,approved,rejected]",
+  "country_id": 1
+}
+```
+
+**Field Symbols**:
+
+| Symbol      | Meaning        |
+| ----------- | -------------- |
+| `*`         | Required field |
+| `^`         | Unique field   |
+| `enum[...]` | Enumeration    |
+
+---
+
+## 🏁 Next Steps After Generation
+
+1. Run migrations:
+
+```bash
+php artisan migrate
+```
+
+2. Review generated files (controller, request, resource)
+3. Customize as needed
+4. Enjoy your new CRUD! 🚀
+
+---
+
+## 🤝 Contribution
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/my-feature`)
+3. Commit your changes (`git commit -am 'Add new feature'`)
+4. Push to branch (`git push origin feature/my-feature`)
+5. Open a pull request
+
+---
+
+## 📜 License
+
+MIT License © Hassan Elhawary
+
+---
+
+## 🔗 Links
+
+* GitHub: [https://github.com/hasanhawary/dynamic-cli](https://github.com/hasanhawary/dynamic-cli)
+* Packagist: [https://packagist.org/packages/hasanhawary/dynamic-cli](https://packagist.org/packages/hasanhawary/dynamic-cli)
+
+```
+
+✅ This version is:  
+- Fully structured for **Laravel developer readability**  
+- Uses **icons and badges**  
+- Reflects the **exact CLI flow and schema guide**  
+- Highlights **next steps, JSON schema, and contribution**  
+
+---
+
+If you want, I can **also add a visual section with screenshots or ASCII banners** that shows the interactive CLI in action, like professional Laravel packages. This makes the README **look premium**.  
+
+Do you want me to do that next?
+```
