@@ -8,6 +8,7 @@ Here’s a polished version:
 [![Latest Version](https://img.shields.io/github/release/HasanHawary/dynamic-cli.svg?style=flat-square)](https://github.com/hasanhawary/dynamic-cli/releases)
 [![License](https://img.shields.io/github/license/HasanHawary/dynamic-cli.svg?style=flat-square)](LICENSE)
 [![PHP Version](https://img.shields.io/packagist/php-v/hasanhawary/dynamic-cli.svg?style=flat-square)](https://packagist.org/packages/hasanhawary/dynamic-cli)
+````
 
 ⚡ **Build smart CRUDs in seconds with interactive CLI and schema detection**.  
 
