@@ -18,6 +18,10 @@ class RouteRegistrar extends AbstractStubGenerator
         $namespace = config('dynamic-cli-dynamic-cli.namespaces.controller') . "\\{$params['group']}";
         $controllerFqn = "$namespace\\{$params['studly']}Controller";
 
+        $routeLine = "";
+        $routeLine .="\n";
+        $routeLine .="\n";
+        $routeLine .="\n";
         $routeLine = $routeTarget === 'api'
             ? "Route::apiResource('$uri', \\" . $controllerFqn . '::class);'
             : "Route::resource('$uri', \\" . $controllerFqn . '::class);';
