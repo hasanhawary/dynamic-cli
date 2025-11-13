@@ -114,7 +114,7 @@ class ModelGenerator extends AbstractStubGenerator
             {
                 return new Attribute(
                     get: fn(\$value) => Media::url(\$value),
-                    set: fn(\$value) => Media::from(\$value)->store()
+                    set: fn(\$value) => Media::replace(\$this->\$column ?? null)->upload(\$value)
                 );
             }
         EOT;
