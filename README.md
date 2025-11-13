@@ -4,9 +4,10 @@ Here’s a polished version:
 
 # 🧠 Dynamic CLI CRUD Generator for Laravel
 
-[![Latest Version](https://img.shields.io/github/release/HasanHawary/dynamic-cli.svg?style=flat-square)](https://github.com/hasanhawary/dynamic-cli)
-[![License](https://img.shields.io/github/license/HasanHawary/dynamic-cli.svg?style=flat-square)](LICENSE)
-[![PHP Version](https://img.shields.io/packagist/php-v/hasanhawary/dynamic-cli.svg?style=flat-square)](https://packagist.org/packages/hasanhawary/dynamic-cli)
+[![Latest Stable Version](https://img.shields.io/packagist/v/hasanhawary/dynamic-cli.svg)](https://packagist.org/packages/hasanhawary/dynamic-cli)
+[![Total Downloads](https://img.shields.io/packagist/dm/hasanhawary/dynamic-cli.svg)](https://packagist.org/packages/hasanhawary/dynamic-cli)
+[![PHP Version](https://img.shields.io/packagist/php-v/hasanhawary/dynamic-cli.svg)](https://packagist.org/packages/hasanhawary/dynamic-cli)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ⚡ **Build smart CRUDs in seconds with interactive CLI and schema detection**.  
 
