@@ -4,7 +4,7 @@ Here’s a polished version:
 
 # 🧠 Dynamic CLI CRUD Generator for Laravel
 
-[![Latest Version](https://img.shields.io/github/release/HasanHawary/dynamic-cli.svg?style=flat-square)](https://github.com/hasanhawary/dynamic-cli/releases)
+[![Latest Version](https://img.shields.io/github/release/HasanHawary/dynamic-cli.svg?style=flat-square)](https://github.com/hasanhawary/dynamic-cli)
 [![License](https://img.shields.io/github/license/HasanHawary/dynamic-cli.svg?style=flat-square)](LICENSE)
 [![PHP Version](https://img.shields.io/packagist/php-v/hasanhawary/dynamic-cli.svg?style=flat-square)](https://packagist.org/packages/hasanhawary/dynamic-cli)
 
