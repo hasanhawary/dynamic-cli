@@ -20,8 +20,8 @@
     "php": "^8.2",
     "illuminate/support": "^10.0 || ^11.0 || ^12.0 || ^13.0",
     "illuminate/console": "^10.0 || ^11.0 || ^12.0 || ^13.0",
-    "hasanhawary/lookup-manager": "^1.0",
-    "hasanhawary/media-manager": "^1.0"
+    "hasanhawary/lookup-manager": "*",
+    "hasanhawary/media-manager": "*"
   },
   "autoload": {
     "psr-4": {
